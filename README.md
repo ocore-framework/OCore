@@ -29,7 +29,7 @@ namespace HelloWorld
     {
         public Task<string> SayHelloTo(string name)
         {
-            return Task.FromResult($"Hello, {name}! It is a beautiful world! And you are my favorite part of it!");
+            return Task.FromResult($"Hello, {name}!");
         }
     }
 }
@@ -41,7 +41,7 @@ Press F5 and POST (using Postman/VS Code REST client):
 ### Say hello to the world
 POST http://localhost:9000/services/HelloWorld/SayHelloTo
 
-"COCPORN"
+"OCore"
 ```
 
 You can also visit http://localhost:9000/swagger to see the OpenApi generated docs.
@@ -59,8 +59,8 @@ POST http://localhost:9000/data/CorrelationIdRecorder/[INSERT ID HERE]/tomermaid
 sequenceDiagram
    participant HTTP
    participant SayHelloTo
-   HTTP->>+SayHelloTo: ("COCPORN")   
-   SayHelloTo->>-HTTP: ("Hello, COCPORN")
+   HTTP->>+SayHelloTo: ("OCore")   
+   SayHelloTo->>-HTTP: ("Hello, OCore")
 ```
 
 **nuget packages** are built automatically when version numbers are increased.
@@ -151,10 +151,12 @@ Using Postman or the Visual Studio Code REST client (I will be using this in the
 ### Say Hello
 POST http://localhost:9000/service/MyService/Hello
 
-["COCPORN"]
+["OCore"]
 ```
 
-The service will then respond with a 200-message with a string HTTP body of `"Hello, COCPORN"`.
+(The JSON list-notation is optional with a single parameter.)
+
+The service will then respond with a 200-message with a string HTTP body of `"Hello, OCore"`.
 
 ### Parameter passing
 
@@ -212,14 +214,14 @@ There is support for running asynchronous action filters, although these are not
 There is currently a loosely typed Service client that works in Blazor and other dotnet projects (the interface for this _will change_):
 
 ```csharp
-var (response, status) = await Client.Invoke<IMyService, string>("Hello", "COCPORN");
+var (response, status) = await Client.Invoke<IMyService, string>("Hello", "OCore");
 ```
 
 I am toying with the idea of making a strongly typed client using Roslyn code generation.
 
 ## Data Entities
 
-**When to use**: Use data entities when you have a problem that is data based_, as in "I have discrete data that I need to grok". This is opposed to _task based_, as in "I have some tasks I need to get done". Services optionally provide a CRUD(Create/Read/Update/Delete) interface to the cluster.
+**When to use**: Use data entities when you have a problem that is _data based_, as in "I have discrete data that I need to grok". This is opposed to _task based_, as in "I have some tasks I need to get done". Services optionally provide a CRUD(Create/Read/Update/Delete) interface to the cluster.
 
 OCore Data Entities are a quick way to model data so that it is accessible inside and optionally outside the cluster.
 
@@ -281,7 +283,7 @@ If `MapDataEntities` is called (as is default by `UseDefaultOCore`), you can now
 POST http://localhost:9000/data/ShortenedUrl/SomeId
 
 {
-    "RedirectTo": "http://www.cocporn.com"
+    "RedirectTo": "http://www.example.com"
 }
 ```
 
@@ -296,7 +298,7 @@ GET http://localhost:9000/data/ShortenedUrl/SomeId
 
 ```json
 {
-    "RedirectTo": "http://www.cocporn.com",
+    "RedirectTo": "http://www.example.com",
     "TimesVisited": 0
 }
 ```
@@ -349,10 +351,44 @@ Support for more methods of fan-out is coming.
 - AccountCombined - The Data Entity will use `Guid.Combine` to create a key. Example: `03A9765C-2A7E-4780-A368-CCA645C4B278:70A3DA00-8D21-4BA8-B833-971E616079C8`. This will fail if the identity is not a Guid.
 - AccountCombinedPrefix - The Data Entity will use `Guid.Combine` to create a key. Example: `03A9765C-2A7E-4780-A368-CCA645C4B278:70A3DA00-8D21-4BA8-B833-971E616079C8:chat`. This will fail if the identity is not a Guid.
 - Global - All entities of this Data Entity will have the key `Global`, meaning all requests will hit the same activation. 
-- Identity - The Data Entity will take the identity from the route, example: `http://localhost:9000/data/blogpost/first` will create the key `first`. Everyone who know the identity of the entity can access it
+- Identity - The Data Entity will take the identity from the route, example: `http://localhost:9000/data/blogpost/first` will create the key `first`. Everyone who knows the identity of the entity can access it
 - Tenant - The Data Entity will be keyed on Tenant. This will be fetched from the request payload. `http://localhost:9000/data/tenantconfiguration` will be keyed on `tenant1`
 - TenantPrefix - The Data Entity will be keyed on Tenant ID with identity picked from route. `http://localhost:9000/data/tenantuser/Peter` will be keyed on `tenant1:Peter`
 
+## [WIP] Decomposition
+
+When designing your data entities, you can decompose them into separate entities:
+
+```csharp
+// Mock code, will be added when feature materializes
+
+public class UserEntity : DataEntity<User>, IUser
+{
+    public Task<int> GetUserStats() 
+    {
+        // Fetch contact data entity with the same key
+        // as "this", not probably something you would
+        // do in "real life", but it shows how to jump
+        // from entity-type to entity-type
+        var contacts = Get<IContacts>();
+        return contacts.Count();
+    }
+}
+```
+
+This makes it simple to create logical entities that are partially and lazily loaded on demand. Also, this extends to being able to fetch multiple entities in a single HTTP call [WIP]:
+
+```http
+### Multi entity fetch
+GET http://localhost:9000/data/User,Contacts/Id1
+```
+
+...or even... [WIP]
+
+```http
+### Multi entity fetch
+GET http://localhost:9000/data/User,Contacts/Id1,Id2,Id3
+```
 
 ## `Entity<T>`
 
@@ -406,4 +442,4 @@ public class HandleMyEvents : EventHandler<MyEvent> {
 }
 ```
 
-The eventing system is many-to-many, as in: Events can be raised anywhere in the code where you can get a hold of the event aggregator and each event can be handled by multiple handlers.
+The eventing system is many-to-many, as in: Events can be raised anywhere in the code where you can get a hold of the event aggregator and each event can be handled by multiple handlers. Under the hood it is implemented with Orleans implicit stream subscriptions.
