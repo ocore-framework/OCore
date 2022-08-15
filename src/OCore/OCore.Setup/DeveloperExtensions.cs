@@ -5,10 +5,12 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OCore.Authorization;
 using OCore.Diagnostics;
+using OCore;
 using Orleans.Hosting;
 using Orleans.Providers;
 using System;
 using System.Threading.Tasks;
+using OCore.Services;
 
 namespace OCore.Setup
 {
@@ -30,7 +32,7 @@ namespace OCore.Setup
             Console.ReadLine();
         }
 
-        public static void DeveloperSetup(this IHostBuilder hostBuilder,
+        public static IHostBuilder DeveloperSetup(this IHostBuilder hostBuilder,
             Action<ISiloBuilder> siloConfigurationDelegate = null)
         {
             var configuration = new ConfigurationBuilder()
@@ -39,6 +41,12 @@ namespace OCore.Setup
                  .Build();
 
             hostBuilder.UseConsoleLifetime();
+
+            var services = Services.Discovery.GetAll();
+            foreach (var service in services)
+            {
+                hostBuilder.AddService(service);
+            }
 
             hostBuilder.ConfigureLogging(logging => logging.AddConsole());
 
@@ -57,13 +65,15 @@ namespace OCore.Setup
             {
                 siloBuilder.UseLocalhostClustering();
                 siloBuilder.AddMemoryGrainStorage("PubSubStore");                
-                siloBuilder.AddMemoryStreams<DefaultMemoryMessageBodySerializer>("MemoryStreamProvider");
+                siloBuilder.AddMemoryStreams<DefaultMemoryMessageBodySerializer>("BaseStreamProvider");
                 siloBuilder.AddMemoryGrainStorageAsDefault();
                 siloBuilder.AddOCoreAuthorization();
                 siloBuilder.AddOCoreDeveloperDiagnostics();
                 siloBuilder.ConfigureLogging(builder => builder.SetMinimumLevel(LogLevel.Information));
                 siloConfigurationDelegate?.Invoke(siloBuilder);
             });
+
+            return hostBuilder;
         }
 
     }

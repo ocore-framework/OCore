@@ -12,15 +12,15 @@ namespace OCore.Entities.Data.Http
 {
     public abstract class DataEntityDispatcher
     {
-        string prefix;
-        string dataEntityName;
-        KeyStrategy keyStrategy;
-        int maxFanoutLimit;
+        readonly string prefix;
+        readonly string dataEntityName;
+        readonly KeyStrategy keyStrategy;
+        readonly int maxFanOutLimit;
 
         public DataEntityDispatcher(string prefix, 
             string dataEntityName, 
             KeyStrategy keyStrategy,
-            int maxFanoutLimit)
+            int maxFanOutLimit)
         {
             this.prefix = prefix ?? string.Empty;
             if (this.prefix.EndsWith("/") == false)
@@ -29,7 +29,7 @@ namespace OCore.Entities.Data.Http
             }
             this.dataEntityName = dataEntityName;
             this.keyStrategy = keyStrategy;
-            this.maxFanoutLimit = maxFanoutLimit;
+            this.maxFanOutLimit = maxFanOutLimit;
         }
 
         /// <summary>
@@ -96,9 +96,9 @@ namespace OCore.Entities.Data.Http
                 default:
                     throw new InvalidOperationException("Unknown key strategy");
             }
-            if (maxFanoutLimit != 0 && keys.Length > maxFanoutLimit)
+            if (maxFanOutLimit != 0 && keys.Length > maxFanOutLimit)
             {
-                throw new InvalidOperationException("Keys exceed max fanout limit");
+                throw new InvalidOperationException("Keys exceed max fan out limit");
             } else
             {
                 return keys;

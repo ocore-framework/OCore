@@ -19,9 +19,10 @@ namespace OCore.Services.Http
             var dispatcher = routes.ServiceProvider.GetRequiredService<ServiceRouter>();
             var logger = routes.ServiceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<ServiceRouter>();
 
-            var servicesToMap = DiscoverServicesToMap();
+            var servicesToMap = Discovery.GetAll();
 
             int routesCreated = 0;
+
             // Map each grain type to a route based on the attributes
             foreach (var serviceType in servicesToMap)
             {
@@ -30,21 +31,6 @@ namespace OCore.Services.Http
 
             logger.LogInformation($"{routesCreated} route(s) were created for grains.");
             return routes;
-        }
-
-        private static IEnumerable<Type> GetAllTypesThatHaveAttribute<T>() where T : Attribute
-        {
-            return AppDomain
-                .CurrentDomain
-                .GetAssemblies()
-                .SelectMany(x => x.GetTypes())
-                .Where(type => !string.IsNullOrEmpty(type.Namespace) &&
-                   type.GetCustomAttribute<GeneratedCodeAttribute>() == null && type.GetCustomAttributes(true).Where(z => z is ServiceAttribute).Any());
-        }
-
-        private static List<Type> DiscoverServicesToMap()
-        {
-            return GetAllTypesThatHaveAttribute<ServiceAttribute>().ToList();
         }
 
         private static int MapServiceToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix, ServiceRouter dispatcher, ILogger<ServiceRouter> logger)

@@ -3,6 +3,7 @@ using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
 using OCore.Authorization;
+using OCore.Core;
 using OCore.Entities.Data;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -113,12 +114,22 @@ namespace OCore.Http.OpenApi
             {
                 if (StripInternal == true
                     && resource.BaseResource.StartsWith("OCore")) continue;
-                if (resource is ServiceResource)
+                if (resource is ServiceResource serviceResource)
                 {
+                    if (serviceResource.MethodInfo.GetCustomAttribute<InternalAttribute>() != null)
+                    {
+                        continue;
+                    }
+
                     AddServiceResource(paths, resource, servicePrefix, schemaGenerator, schemaRepository);
                 }
                 else if (resource is DataEntityResource dataEntityResource)
                 {
+                    if (dataEntityResource.MethodInfo.GetCustomAttribute<InternalAttribute>() != null)
+                    {
+                        continue;
+                    }
+
                     AddDataEntityResource(paths, dataEntityResource, dataEntityPrefix, schemaGenerator, schemaRepository);
                 }
             }

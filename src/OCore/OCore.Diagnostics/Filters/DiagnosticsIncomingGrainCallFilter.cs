@@ -50,8 +50,8 @@ namespace OCore.Diagnostics
             // I added this to make it possible to debug the filter because there are so many 
             // Orleans-specific messages running in the silo
             var grainName = context.Grain.GetType().FullName ?? throw new NullReferenceException("Unable to get grain name");
-#if DEBUG
 
+#if DEBUG
             if (grainName.StartsWith("Orleans")
                 || grainName.StartsWith("OCore")
                 || sinks.Count() == 0)

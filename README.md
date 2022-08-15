@@ -44,6 +44,12 @@ POST http://localhost:9000/services/HelloWorld/SayHelloTo
 "OCore"
 ```
 
+This will return something like:
+
+```
+
+```
+
 You can also visit http://localhost:9000/swagger to see the OpenApi generated docs.
 
 If you look at the CorrelationId-header in the response, you can paste it into your HTTP testing tool like this:
@@ -60,7 +66,7 @@ sequenceDiagram
    participant HTTP
    participant SayHelloTo
    HTTP->>+SayHelloTo: ("OCore")   
-   SayHelloTo->>-HTTP: ("Hello, OCore")
+   SayHelloTo->>-HTTP: ("Hello, OCore!")
 ```
 
 **nuget packages** are built automatically when version numbers are increased.
