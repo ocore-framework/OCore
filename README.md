@@ -8,8 +8,7 @@ Opinionated and experimental application stack built on Microsoft Orleans and fr
 
 New dotnet core console application. Add from nuget:
 
-- `OCore.Setup`
-- `Microsoft.Orleans.CodeGenerator.MSBuild`
+- `OCore.Setup` (provides we can test that build and code generation works with transitive dependencies, will be updated)
 
 Type:
 
