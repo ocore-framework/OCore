@@ -1,11 +1,10 @@
 ﻿using OCore.Services;
-await OCore.Setup.DeveloperExtensions.LetsGo();
+await OCore.Setup.DeveloperExtensions.LetsGo("Hello World");
 
 [Service("HelloWorld")]
 public interface IHelloWorldService : IService
 {
     Task<string> SayHelloTo(string name);
-
     Task<string> ShoutHelloTo(string name);
 }
 

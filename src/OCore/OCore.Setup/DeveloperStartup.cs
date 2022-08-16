@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 //using OCore.Dashboard;
@@ -11,8 +12,15 @@ namespace OCore.Setup
 {
     public class DeveloperStartup
     {
+        readonly IConfiguration configuration;
+
+        public DeveloperStartup(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
+
         public void ConfigureServices(IServiceCollection services)
-        {            
+        {
             services.AddDefaultOCore();
         }
 
@@ -22,10 +30,11 @@ namespace OCore.Setup
             app.UseMiddleware(typeof(CorrelationIdProviderMiddleware));
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseRouting();
-            app.UseDefaultOCore();            
+            var appTitle = configuration.GetValue<string>("ApplicationTitle");
+            app.UseDefaultOCore(appTitle);
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/api-docs", "OCore Developer API");
+                c.SwaggerEndpoint("/api-docs", appTitle);
             });
             //app.UseOCoreDashboard(env);
         }
