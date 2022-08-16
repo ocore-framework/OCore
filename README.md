@@ -16,21 +16,16 @@ Type:
 using OCore.Services;
 await OCore.Setup.DeveloperExtensions.LetsGo();
 
-namespace HelloWorld
+[Service("HelloWorld")]
+public interface IHelloWorldService : IService
 {
-    [Service("HelloWorld")]
-    public interface IHelloWorldService : IService
-    {
-        Task<string> SayHelloTo(string name);
-    }
-    
-    public class HelloWorldService : Service, IHelloWorldService
-    {
-        public Task<string> SayHelloTo(string name)
-        {
-            return Task.FromResult($"Hello, {name}!");
-        }
-    }
+    Task<string> SayHelloTo(string name);
+}
+
+public class HelloWorldService : Service, IHelloWorldService
+{
+    public Task<string> SayHelloTo(string name) 
+        => Task.FromResult($"Hello, {name}!");    
 }
 ```
 
