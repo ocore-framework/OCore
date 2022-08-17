@@ -16,7 +16,7 @@ namespace OCore.Services
         {
             hostBuilder.ConfigureServices((context, services) =>
             {                
-                services.AddSingleton(sp => {
+                services.AddSingleton(serviceType, sp => {
                     var grainFactory = sp.GetRequiredService<IGrainFactory>();
                     return grainFactory.GetGrain(serviceType, 0);
                 });             
