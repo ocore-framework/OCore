@@ -113,8 +113,9 @@ F5 is waiting for you.
 - Start listening for incoming requests at `http://localhost:9000`
 - Automatically register any `Service` with exposed HTTP endpoints at `http://localhost:9000/services/`
 - Automatically register any `DataEntity` with exposed HTTP endpoints at `http://localhost:9000/data/`
-- Start serving OpenApi documentation for services and data entities at `http://localhost:9000/api-docs/`
+- Start serving OpenApi documentation for services and data entities at `http://localhost:9000/api-docs/` and `http://localhost:9000/swagger`
 - Setup authorization system with user tokens and api-keys (optional use)
+- Register all services with the Microsoft DI system as `Singleton`s so they can be used with constructor injection
 
 ## Service 
 

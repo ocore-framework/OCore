@@ -21,7 +21,7 @@ namespace OCore.Entities.Data
             }
         }
 
-        protected T1 Get<T1>() where T1 : IDataEntity, new()
+        protected T1 Get<T1>() where T1 : IDataEntity
         {            
             return GrainFactory.GetDataEntity<T1>(this.GetPrimaryKeyString());
         }

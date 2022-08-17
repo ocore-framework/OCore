@@ -20,5 +20,6 @@ namespace OCore.Samples.Hello.World.User
     [DataEntity("User")]
     public interface IUser : IDataEntity<UserData>
     {
+        Task<string> TestGetProfile();
     }
 }

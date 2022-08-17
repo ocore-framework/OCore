@@ -1,4 +1,5 @@
-﻿using Orleans;
+﻿using OCore.Entities.Data;
+using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,12 +11,14 @@ namespace OCore.Samples.Hello.World.User
 
     [Serializable]
     [GenerateSerializer]
-    public class UserProfile
+    public class UserProfileData
     {
 
     }
 
-    public interface IUserProfile
+    [DataEntity("UserProfile")]
+    public interface IUserProfile : IDataEntity<UserProfileData>
     {
+        Task<string> Ping(string ping);
     }
 }
