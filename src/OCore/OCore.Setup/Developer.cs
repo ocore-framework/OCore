@@ -14,7 +14,7 @@ using OCore.Services;
 
 namespace OCore.Setup
 {
-    public static class DeveloperExtensions
+    public static class Developer
     {
         public static async Task LetsGo(
             string applicationTitle = "OCore App Development",

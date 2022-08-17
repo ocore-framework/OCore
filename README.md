@@ -14,7 +14,7 @@ Type:
 
 ```csharp
 using OCore.Services;
-await OCore.Setup.DeveloperExtensions.LetsGo();
+await OCore.Setup.Developer.LetsGo();
 
 [Service("HelloWorld")]
 public interface IHelloWorldService : IService
@@ -101,7 +101,7 @@ Install the NuGet package `OCore.Setup` and `Microsoft.Orleans.CodeGenerator.MSB
     class Program
     {
         static async Task Main(string[] args) =>
-            await OCore.Setup.DeveloperExtensions.LetsGo();
+            await OCore.Setup.Developer.LetsGo();
     }
 ```
 F5 is waiting for you.
@@ -116,6 +116,7 @@ F5 is waiting for you.
 - Start serving OpenApi documentation for services and data entities at `http://localhost:9000/api-docs/` and `http://localhost:9000/swagger`
 - Setup authorization system with user tokens and api-keys (optional use)
 - Register all services with the Microsoft DI system as `Singleton`s so they can be used with constructor injection
+- Adds a correlation ID tracker to the HTTP interface
 
 ## Service 
 

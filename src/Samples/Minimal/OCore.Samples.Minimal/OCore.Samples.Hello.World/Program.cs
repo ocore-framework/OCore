@@ -1,5 +1,5 @@
 ﻿using OCore.Services;
-await OCore.Setup.DeveloperExtensions.LetsGo("Hello World");
+await OCore.Setup.Developer.LetsGo("Hello World");
 
 [Service("HelloWorld")]
 public interface IHelloWorldService : IService
