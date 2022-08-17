@@ -8,7 +8,7 @@ Opinionated and experimental application stack built on Microsoft Orleans and fr
 
 New dotnet core console application. Add from nuget:
 
-- `OCore.Setup` (provides we can test that build and code generation works with transitive dependencies, will be updated)
+- `OCore.Setup`
 
 Type:
 
@@ -41,7 +41,15 @@ POST http://localhost:9000/services/HelloWorld/SayHelloTo
 This will return something like:
 
 ```
+HTTP/1.1 200 OK
+Connection: close
+Content-Type: application/json
+Date: Wed, 17 Aug 2022 00:45:03 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+CorrelationId: 6df5a779-86a4-47fa-a44a-ee803a3f3a4d
 
+"Hello, OCore!"
 ```
 
 You can also visit http://localhost:9000/swagger to see the OpenApi generated docs.

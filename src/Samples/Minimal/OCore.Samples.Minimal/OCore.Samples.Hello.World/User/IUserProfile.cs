@@ -1,5 +1,4 @@
-﻿using OCore.Entities.Data;
-using Orleans;
+﻿using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,17 +7,15 @@ using System.Threading.Tasks;
 
 namespace OCore.Samples.Hello.World.User
 {
+
     [Serializable]
     [GenerateSerializer]
-    public class UserData
+    public class UserProfile
     {
-        [Id(0)]
-        public Guid UserId { get; set; }
+
     }
 
-
-    [DataEntity("User")]
-    public interface IUser : IDataEntity<UserData>
+    public interface IUserProfile
     {
     }
 }
