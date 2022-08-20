@@ -6,11 +6,13 @@ This is just a small sample to mimic that stupid bullshit you see in a lot of re
 
 Mostly, this is a test to see if generating a scaffold from an MD is a viable option, to see if we can reach the "coding at the speed of thought" ideal.
 
-It will break the system down into the "common three pieces":
+It will break the system down into the "common five pieces":
 
 - Services - Something that responds quickly to a command
 - Entities - Something that responds reasonably quickly to working with data
 - Events - Something happened
+- EventHandlers - Something that responds to events
+- Exceptions - Something that is thrown when something goes wrong
 
 If you imagine this is a document you can create while spending 30 minutes with product designers and stakeholders, you will be doing it correctly.
 
@@ -25,12 +27,9 @@ GOAL:
 ## Services
 
 - Customer
-    - New table - Hihi, these are similar to check in/check out for the waiter
-        - Can be placed : Table
-        - Cannot be placed : It is full
-    - Adieu
-    - Fails with
-        - It is full
+    * New table -> Table - Hihi, these are similar to check in/check out for the waiter
+        - Fails with : Restaurant is full
+    * Adieu    
 - Waiter
     - Check in
     - Check out
@@ -42,15 +41,15 @@ GOAL:
 - Customer - The customer is probably anonymous in this case
 - Order
     - Table - It is linked like this because an order could move from one table to another
-    - Total : decimal
+    - Total, summed Item : decimal
+    - Settlements - Multiple settlements for same order is possible
     - Settled? - Question mark indicates it is a bool (Make a "Settle"-method?)
     - Orderlines - Plural of existing entity makes it a list linked to another entity
     - Taken by : Waiter
     - Delivered by : Waiter
 - Orderline
     - Item
-    - Picked up by Customer - So you can split the bill
-    - Number
+    - Amount : int    
 - Item
     - Name
     - Price : decimal
@@ -69,7 +68,7 @@ GOAL:
 - Order settled
     - Order
 
-# Exceptions
+## Exceptions
 
-- It is full, "Sorry sir and or madame, it is full"
-- Insufficient funds, "You don't seem to be able to pay for yourself, you drunken bastard."
+- Restaurant is full - "Sorry sir and or madame, it is full"
+- Insufficient funds - "You don't seem to be able to pay for yourself, you drunken bastard."
