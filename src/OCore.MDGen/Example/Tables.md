@@ -1,4 +1,4 @@
-# Tables 2022-08-18
+﻿# Tables 2022-08-18
 
 For a restaurant, we need to be able to take orders and have them settled. We need to manage tables, waiters and customers.
 

@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.Dashboard", "OCore.Da
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{1D481FC6-63B0-4F1D-BBA7-D3495FACE656}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.MDGen", "..\Tools\MDGen\OCore.MDGen\OCore.MDGen.csproj", "{3E3E87B5-D39D-4B8E-941F-91FC54E04E6A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.MDGen", "..\OCore.MDGen\OCore.MDGen.csproj", "{8F750DB7-F1E4-47F4-AA40-77E3E5F9CE06}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -115,16 +115,16 @@ Global
 		{CE7904B5-0252-4042-9D5B-CC6B0DEA54A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CE7904B5-0252-4042-9D5B-CC6B0DEA54A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CE7904B5-0252-4042-9D5B-CC6B0DEA54A6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3E3E87B5-D39D-4B8E-941F-91FC54E04E6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3E3E87B5-D39D-4B8E-941F-91FC54E04E6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3E3E87B5-D39D-4B8E-941F-91FC54E04E6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3E3E87B5-D39D-4B8E-941F-91FC54E04E6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F750DB7-F1E4-47F4-AA40-77E3E5F9CE06}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F750DB7-F1E4-47F4-AA40-77E3E5F9CE06}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F750DB7-F1E4-47F4-AA40-77E3E5F9CE06}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F750DB7-F1E4-47F4-AA40-77E3E5F9CE06}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{3E3E87B5-D39D-4B8E-941F-91FC54E04E6A} = {1D481FC6-63B0-4F1D-BBA7-D3495FACE656}
+		{8F750DB7-F1E4-47F4-AA40-77E3E5F9CE06} = {1D481FC6-63B0-4F1D-BBA7-D3495FACE656}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1769AFD-BFB2-4F50-9BEA-21BA9779EE98}
