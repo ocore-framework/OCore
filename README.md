@@ -6,7 +6,7 @@ Opinionated and experimental application stack built on Microsoft Orleans and fr
 
 ## Hello World
 
-New dotnet core console application. Add from nuget:
+New dotnet core console application. Add from nuget (include preview):
 
 - `OCore.Setup`
 
