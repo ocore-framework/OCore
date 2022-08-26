@@ -5,8 +5,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<IsPackable>true</IsPackable>
-		<PackageId>OCore.Setup</PackageId>
-		<Version>0.0.24-preview</Version>
+		<PackageId>OCore.Setup</PackageId>		
 		<Authors>COCPORN</Authors>
 	</PropertyGroup>
 

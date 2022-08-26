@@ -4,8 +4,7 @@
 		<TargetFramework>net6.0</TargetFramework>
 		<LangVersion>latest</LangVersion>
 		<IsPackable>true</IsPackable>
-		<PackageId>OCore.Services</PackageId>
-		<Version>0.1.2-preview</Version>
+		<PackageId>OCore.Services</PackageId>		
 		<Authors>COCPORN</Authors>
 	</PropertyGroup>
 

@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>    
-    <PackageId>OCore.Entities</PackageId>
-    <Version>0.1.4-preview</Version>
+    <PackageId>OCore.Entities</PackageId>    
     <Authors>COCPORN</Authors>
   </PropertyGroup>
 

@@ -3,8 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <IsPackable>true</IsPackable>
-    <PackageId>OCore.Dashboard</PackageId>
-    <Version>0.0.8-preview</Version>
+    <PackageId>OCore.Dashboard</PackageId>    
     <Authors>COCPORN</Authors>
   </PropertyGroup>
 
