@@ -34,9 +34,8 @@ namespace OCore.Diagnostics
         }
 
         public static void AddGraphingDiagnostics(this ISiloBuilder siloBuilder)
-        {
-            // Temporarily remove this to make packages work
-            //siloBuilder.AddDiagnosticsSink<CorrelationIdRecordingSink>();
+        {            
+            siloBuilder.AddDiagnosticsSink<CorrelationIdRecordingSink>();
         }
 
         public static void AddOCoreDeveloperDiagnostics(this ISiloBuilder siloBuilder)

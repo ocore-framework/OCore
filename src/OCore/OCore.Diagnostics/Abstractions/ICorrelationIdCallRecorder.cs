@@ -12,7 +12,7 @@ namespace OCore.Diagnostics.Abstractions
         Task Request(string? from, string to, string parameters);
 
         [Internal]
-        Task Complete(string? from, string to, string result);
+        Task Complete(string? from, string to, string? result);
 
         [Internal]
         Task Fail(string methodName, string previousMethodName, string exceptionType, string message);

@@ -28,7 +28,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
         {
             var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
-            var result = JsonConvert.SerializeObject(grainCallContext.Result);
+            var result = grainCallContext.Result?.ToString();
 
             // Flip MethodName and PreviousMethodName here as it is working its way down the call stack
             await recorderGrain.Complete(request.MethodName, request.PreviousMethodName!, result);
@@ -49,7 +49,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
         {
             var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
-            var list = new List<string>();
+            var list = new List<string?>();
 
             var sb = new StringBuilder();
 
@@ -57,7 +57,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
             for (int i = 0; i < grainCallContext.Arguments.Length; i++)
             {
-                list.Add(JsonConvert.SerializeObject(grainCallContext.Arguments[i]));
+                list.Add(grainCallContext.Arguments[i]?.ToString());
             }
 
             sb.Append(string.Join(", ", list.ToArray()));

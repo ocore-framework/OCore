@@ -67,7 +67,7 @@ namespace OCore.Diagnostics.Entities
             }            
         }
 
-        public async Task Complete(string? from, string to, string result)
+        public async Task Complete(string? from, string to, string? result)
         {
             State.Entries.Add(new CallEntry
             {

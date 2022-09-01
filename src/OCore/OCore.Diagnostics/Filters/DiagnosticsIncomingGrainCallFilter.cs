@@ -51,7 +51,6 @@ namespace OCore.Diagnostics
             // Orleans-specific messages running in the silo
             var grainName = context.Grain.GetType().FullName ?? throw new NullReferenceException("Unable to get grain name");
 
-#if DEBUG
             if (grainName.StartsWith("Orleans")
                 || grainName.StartsWith("OCore")
                 || sinks.Count() == 0)
@@ -59,7 +58,6 @@ namespace OCore.Diagnostics
                 await context.Invoke();
                 return;
             }
-#endif
 
             if (sinks.Count() == 0)
             {

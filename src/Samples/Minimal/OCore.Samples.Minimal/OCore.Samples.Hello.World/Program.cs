@@ -1,4 +1,7 @@
-﻿using OCore.Services;
+﻿using OCore.Entities.Data;
+using OCore.Services;
+using Orleans;
+
 await OCore.Setup.Developer.LetsGo("Hello World");
 
 [Service("HelloWorld")]
@@ -10,26 +13,51 @@ public interface IHelloWorldService : IService
 
 public class HelloWorldService : Service, IHelloWorldService
 {
-    readonly INameCapitalizationService nameCapitalizationService;
+    readonly ICapitalizationService capitalizationService;
 
-    public HelloWorldService(INameCapitalizationService nameCapitalizationService)
+    public HelloWorldService(ICapitalizationService capitalizationService)
     {
-        this.nameCapitalizationService = nameCapitalizationService;
+        this.capitalizationService = capitalizationService;
     }
 
     public Task<string> SayHelloTo(string name) => Task.FromResult($"Hello, {name}!");
 
     public async Task<string> ShoutHelloTo(string name)
-        => await SayHelloTo(await nameCapitalizationService.Capitalize(name));
+        => await SayHelloTo(await capitalizationService.Capitalize(name));
 }
 
 [Service("Capitalization")]
-public interface INameCapitalizationService : IService
+public interface ICapitalizationService : IService
 {
     Task<string> Capitalize(string name);
 }
 
-public class NameCapitalizationService : Service, INameCapitalizationService
+public class NameCapitalizationService : Service, ICapitalizationService
 {
-    public Task<string> Capitalize(string name) => Task.FromResult(name.ToUpper());    
+    public Task<string> Capitalize(string name) => Task.FromResult(name.ToUpper());
+}
+
+
+[Serializable]
+[GenerateSerializer]
+public class CalculatorState
+{
+    [Id(0)]
+    public decimal Value { get; set; }
+}
+
+[DataEntity("Calculator", dataEntityMethods: DataEntityMethods.All)]
+public interface ICalculator : IDataEntity<CalculatorState>
+{
+    Task<decimal> Add(decimal value);
+}
+
+public class Calculator : DataEntity<CalculatorState>, ICalculator
+{
+    public async Task<decimal> Add(decimal value)
+    {
+        State.Value += value;
+        await WriteStateAsync();
+        return State.Value;
+    }
 }
