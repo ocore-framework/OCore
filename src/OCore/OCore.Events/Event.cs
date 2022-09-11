@@ -26,5 +26,8 @@ namespace OCore.Events
 
         [Id(4)]
         public T Payload { get; set; }
+
+        [Id(5)]
+        public string CorrelationId { get; set; }
     }
 }
