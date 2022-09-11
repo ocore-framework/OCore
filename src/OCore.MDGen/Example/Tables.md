@@ -59,7 +59,7 @@ GOAL:
 - Settlement
     - Order
     - SettledBy : Customer
-    - Tip : decimal - Waiters need love to, not just when you ask them when they get off their shift and take them back with you
+    - Tip : decimal - Waiters need love too
     - Fails with
         - Insufficient funds
 

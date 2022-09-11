@@ -37,13 +37,10 @@ public class NameCapitalizationService : Service, ICapitalizationService
     public Task<string> Capitalize(string name) => Task.FromResult(name.ToUpper());
 }
 
-
-[Serializable]
 [GenerateSerializer]
 public class CalculatorState
 {
-    [Id(0)]
-    public decimal Value { get; set; }
+    [Id(0)] public decimal Value { get; set; }
 }
 
 [DataEntity("Calculator", dataEntityMethods: DataEntityMethods.All)]
