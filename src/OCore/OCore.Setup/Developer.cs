@@ -5,21 +5,26 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OCore.Authorization;
 using OCore.Diagnostics;
+using OCore;
 using Orleans.Hosting;
 using Orleans.Providers;
 using System;
 using System.Threading.Tasks;
+using OCore.Services;
 
 namespace OCore.Setup
 {
-    public static class DeveloperExtensions
+    public static class Developer
     {
-        public static async Task LetsGo(Action<IHostBuilder> hostConfigurationDelegate = null,
+        public static async Task LetsGo(
+            string applicationTitle = "OCore App Development",
+            Action<IHostBuilder> hostConfigurationDelegate = null,
             Action<ISiloBuilder> siloConfigurationDelegate = null,
             Action<HostBuilderContext, IServiceCollection> serviceConfigurationDelegate = null)
         {
             var hostBuilder = new HostBuilder();
-            hostBuilder.DeveloperSetup(siloConfigurationDelegate);
+            hostBuilder.DeveloperSetup(siloConfigurationDelegate,                
+                applicationTitle);
             if (serviceConfigurationDelegate != null)
             {
                 hostBuilder.ConfigureServices(serviceConfigurationDelegate);
@@ -30,8 +35,9 @@ namespace OCore.Setup
             Console.ReadLine();
         }
 
-        public static void DeveloperSetup(this IHostBuilder hostBuilder,
-            Action<ISiloBuilder> siloConfigurationDelegate = null)
+        public static IHostBuilder DeveloperSetup(this IHostBuilder hostBuilder,
+            Action<ISiloBuilder> siloConfigurationDelegate = null,
+            string applicationName = "OCore App Development")
         {
             var configuration = new ConfigurationBuilder()
                  .AddEnvironmentVariables()
@@ -39,6 +45,12 @@ namespace OCore.Setup
                  .Build();
 
             hostBuilder.UseConsoleLifetime();
+
+            var services = Services.Discovery.GetAll();
+            foreach (var service in services)
+            {
+                hostBuilder.AddService(service);
+            }
 
             hostBuilder.ConfigureLogging(logging => logging.AddConsole());
 
@@ -51,19 +63,22 @@ namespace OCore.Setup
             {
                 webBuilder.UseUrls("http://*:9000");
                 webBuilder.UseStartup<DeveloperStartup>();
+                webBuilder.UseSetting("ApplicationTitle", applicationName);
             });            
 
             hostBuilder.UseOrleans((hostBuilderContext, siloBuilder) =>
             {
                 siloBuilder.UseLocalhostClustering();
                 siloBuilder.AddMemoryGrainStorage("PubSubStore");                
-                siloBuilder.AddMemoryStreams<DefaultMemoryMessageBodySerializer>("MemoryStreamProvider");
+                siloBuilder.AddMemoryStreams<DefaultMemoryMessageBodySerializer>("BaseStreamProvider");
                 siloBuilder.AddMemoryGrainStorageAsDefault();
                 siloBuilder.AddOCoreAuthorization();
                 siloBuilder.AddOCoreDeveloperDiagnostics();
                 siloBuilder.ConfigureLogging(builder => builder.SetMinimumLevel(LogLevel.Information));
                 siloConfigurationDelegate?.Invoke(siloBuilder);
             });
+
+            return hostBuilder;
         }
 
     }

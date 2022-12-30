@@ -19,7 +19,7 @@ namespace OCore.DefaultSetup
         }
 
         public static void UseDefaultOCore(this IApplicationBuilder app,
-            string appTitle = "OCore app development",
+            string appTitle = "OCore App Development",
             string version = "Development")
         {
             app.UseEndpoints(endpoints =>

@@ -1,75 +1,60 @@
 ﻿using OCore.Entities.Data;
-using OCore.Entities.Data.Extensions;
 using OCore.Services;
 using Orleans;
 
-await OCore.Setup.DeveloperExtensions.LetsGo();
+await OCore.Setup.Developer.LetsGo("Hello World");
 
-namespace HelloWorld
+[Service("HelloWorld")]
+public interface IHelloWorldService : IService
 {
-    [Service("HelloWorld")]
-    public interface IHelloWorldService : IService
-    {
-        Task<string> SayHelloTo(string name);
+    Task<string> SayHelloTo(string name);
+    Task<string> ShoutHelloTo(string name);
+}
 
-        Task<string> ShoutHelloTo(string name);
+public class HelloWorldService : Service, IHelloWorldService
+{
+    readonly ICapitalizationService capitalizationService;
+
+    public HelloWorldService(ICapitalizationService capitalizationService)
+    {
+        this.capitalizationService = capitalizationService;
     }
 
-    public class HelloWorldService : Service, IHelloWorldService
+    public Task<string> SayHelloTo(string name) => Task.FromResult($"Hello, {name}!");
+
+    public async Task<string> ShoutHelloTo(string name)
+        => await SayHelloTo(await capitalizationService.Capitalize(name));
+}
+
+[Service("Capitalization")]
+public interface ICapitalizationService : IService
+{
+    Task<string> Capitalize(string name);
+}
+
+public class NameCapitalizationService : Service, ICapitalizationService
+{
+    public Task<string> Capitalize(string name) => Task.FromResult(name.ToUpper());
+}
+
+[GenerateSerializer]
+public class CalculatorState
+{
+    [Id(0)] public decimal Value { get; set; }
+}
+
+[DataEntity("Calculator", dataEntityMethods: DataEntityMethods.All)]
+public interface ICalculator : IDataEntity<CalculatorState>
+{
+    Task<decimal> Add(decimal value);
+}
+
+public class Calculator : DataEntity<CalculatorState>, ICalculator
+{
+    public async Task<decimal> Add(decimal value)
     {
-        public Task<string> SayHelloTo(string name)
-            => Task.FromResult($"Hello, {name}!");
-
-        public async Task<string> ShoutHelloTo(string name)
-        {
-            var capitalizationService = GetService<INameCapitalizationService>();
-
-            //var lookupCounter = GrainFactory.GetDataEntity<ILookupCounter>(name);
-            //await lookupCounter.IncreaseLookups();
-
-            var capitalizedName = await capitalizationService.Capitalize(name);
-
-            var helloWorldService = GetService<IHelloWorldService>();
-
-            return await helloWorldService.SayHelloTo(capitalizedName);
-        }
+        State.Value += value;
+        await WriteStateAsync();
+        return State.Value;
     }
-
-    [Service("Capitalization")]
-    public interface INameCapitalizationService : IService
-    {
-        Task<string> Capitalize(string name);
-    }
-
-    public class NameCapitalizationService : Service, INameCapitalizationService
-    {
-        public Task<string> Capitalize(string name)
-        {            
-            return Task.FromResult(name.ToUpper());
-        }
-    }
-
-    //[Serializable]
-    //[GenerateSerializer]
-    //public class LookupData
-    //{
-    //    [Id(0)]
-    //    public int Lookups { get; set; }
-    //}
-
-
-    //[DataEntity("LookupCounter")]
-    //public interface ILookupCounter : IDataEntity<LookupData>
-    //{
-    //    Task IncreaseLookups();
-    //}
-
-    //public class LookupCounter : DataEntity<LookupData>, ILookupCounter
-    //{
-    //    public Task IncreaseLookups()
-    //    {
-    //        State.Lookups++;
-    //        return WriteStateAsync();
-    //    }
-    //}
 }

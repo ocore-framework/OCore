@@ -7,12 +7,11 @@ using System.Threading.Tasks;
 
 namespace OCore.Samples.Hello.World.User
 {
-    public class User : DataEntity<UserData>, IUser
+    public class UserProfile : DataEntity<UserProfileData>, IUserProfile
     {
-        public async Task<string> TestGetProfile()
+        public Task<string> Ping(string ping)
         {
-            var userProfile = Get<IUserProfile>();
-            return await userProfile.Ping("Hello");            
+            return Task.FromResult($"Pong! {ping}");
         }
     }
 }

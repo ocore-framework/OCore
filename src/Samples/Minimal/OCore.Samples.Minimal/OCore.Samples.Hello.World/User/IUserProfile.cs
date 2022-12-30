@@ -8,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace OCore.Samples.Hello.World.User
 {
+
     [Serializable]
     [GenerateSerializer]
-    public class UserData
+    public class UserProfileData
     {
-        [Id(0)]
-        public Guid UserId { get; set; }
+
     }
 
-
-    [DataEntity("User")]
-    public interface IUser : IDataEntity<UserData>
+    [DataEntity("UserProfile")]
+    public interface IUserProfile : IDataEntity<UserProfileData>
     {
-        Task<string> TestGetProfile();
+        Task<string> Ping(string ping);
     }
 }

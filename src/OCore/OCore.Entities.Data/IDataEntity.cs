@@ -7,12 +7,6 @@ namespace OCore.Entities.Data
 {
     public interface IDataEntity : IGrainWithStringKey
     {
-        /// <summary>
-        /// Get a decomposed part with the same identity
-        /// </summary>
-        /// <typeparam name="T">The type</typeparam>
-        /// <returns></returns>
-        ValueTask<T> Get<T>() where T: IDataEntity, new();
     }
 
     public interface IDataEntity<T> : IDataEntity

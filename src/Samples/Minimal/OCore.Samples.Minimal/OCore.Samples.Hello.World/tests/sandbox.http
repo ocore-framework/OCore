@@ -1,7 +1,7 @@
 ### Say hello to the world
 POST http://localhost:9000/services/HelloWorld/SayHelloTo
 
-".NET Chapter"
+"OCore"
 
 ### Shout hello to the world
 POST http://localhost:9000/services/HelloWorld/ShoutHelloTo
@@ -17,9 +17,14 @@ POST http://localhost:9000/services/OCore.Authorization/Hello
 GET http://localhost:9000/data/CorrelationIdRecorder/a0105c24-8df2-41e3-b613-36f4a8f4ff1f
 
 ### Get correlation log
-POST http://localhost:9000/data/CorrelationIdRecorder/BLUBB2/tomermaid
-CorrelationId: CID
+POST http://localhost:9000/data/CorrelationIdRecorder/1ae54084-bb07-43b9-81a6-894fe0989aba/tomermaid
 
 ### Get correlation log
-POST http://localhost:9000/data/CorrelationIdRecorder/Blubb/tomermaid
-CorrelationId: CID
+POST http://localhost:9000/data/CorrelationIdRecorder/BLUBB/tomermaid
+
+### Get correlation log
+POST http://localhost:9000/data/CorrelationIdRecorder/e13643d1-2a12-4e9f-98da-e666c2294047/tomermaid
+
+
+### Test composition
+POST http://localhost:9000/data/CorrelationIdRecorder/e13643d1-2a12-4e9f-98da-e666c2294047/tomermaid

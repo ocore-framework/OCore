@@ -12,7 +12,6 @@ using System.Threading.Tasks;
 namespace OCore.Events
 {
     public class Handler<T> : Grain,
-        IGrainWithGuidKey,
         IAsyncObserver<Event<T>>,
         IEventHandler
     {       
@@ -104,10 +103,11 @@ namespace OCore.Events
                     var failureTracker = GrainFactory.GetGrain<IPoisonEventCounter>(item.MessageId);
                     var failures = await failureTracker.Handle();
                     item.Retries = failures - 1;
-                    if (failures == EventTypeOptions.PoisonLimit)
+                    if (failures >= EventTypeOptions.PoisonLimit)
                     {
                         var eventAggregator = GrainFactory.GetGrain<IEventAggregator>(0);
                         await eventAggregator.Raise(new PoisonEvent<T>(item), "poison");
+                        poisonLimitReached = true;
                     }
                 }
 

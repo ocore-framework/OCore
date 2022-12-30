@@ -6,7 +6,6 @@
 		<LangVersion>latest</LangVersion>
 		<IsPackable>true</IsPackable>
 		<PackageId>OCore.Setup</PackageId>
-	
 		<Version>0.0.24-preview</Version>
 		<Authors>COCPORN</Authors>
 	</PropertyGroup>
@@ -19,7 +18,6 @@
 		<PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.4.0" />
 	</ItemGroup>
 
-	
 	<ItemGroup>
 		<ProjectReference Include="..\OCore.Authorization\OCore.Authorization.csproj" />
 		<ProjectReference Include="..\OCore.Core\OCore.Core.csproj" />

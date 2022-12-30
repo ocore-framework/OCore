@@ -28,7 +28,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
         {
             var recorderGrain = await grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
-            var result = JsonConvert.SerializeObject(grainCallContext.Result);
+            var result = grainCallContext.Result?.ToString();
 
             // Flip MethodName and PreviousMethodName here as it is working its way down the call stack
             await recorderGrain.Complete(request.MethodName, request.PreviousMethodName!, result);

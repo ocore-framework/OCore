@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using OCore.Core.Extensions;
 using Orleans;
 using Orleans.Concurrency;
+using Orleans.Runtime;
 using Orleans.Streams;
 using System;
 using System.Collections.Concurrent;
@@ -18,7 +19,6 @@ namespace OCore.Events
     {
         readonly ILogger logger;
         EventOptions options;
-
 
         public EventAggregatorGrain(ILogger<EventAggregatorGrain> logger,
             IOptions<EventOptions> options)
@@ -144,11 +144,14 @@ namespace OCore.Events
 
         private static Event<T> EnvelopeEvent<T>(T @event)
         {
+            var correlationId = RequestContext.Get("D:CorrelationId") as string;
+
             return new Event<T>
             {
                 Payload = @event,
                 CreationTime = DateTimeOffset.UtcNow,
-                MessageId = Guid.NewGuid()
+                MessageId = Guid.NewGuid(),
+                CorrelationId = correlationId,
             };
         }
 

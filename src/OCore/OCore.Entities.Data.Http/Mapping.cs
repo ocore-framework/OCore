@@ -32,8 +32,9 @@ namespace OCore.Entities.Data.Http
             return AppDomain.CurrentDomain
             .GetAssemblies()
             .SelectMany(x => x.GetTypes())
-            .Where(type => type.IsInterface && !string.IsNullOrEmpty(type.Namespace) &&
-             type.GetCustomAttribute<GeneratedCodeAttribute>() == null && type.GetInterfaces().Contains(typeof(T)));
+            .Where(type => type.IsInterface 
+                           && type.GetCustomAttribute<GeneratedCodeAttribute>() == null 
+                           && type.GetInterfaces().Contains(typeof(T)));
         }
 
         private static List<Type> DiscoverDataEntitiesToMap()
