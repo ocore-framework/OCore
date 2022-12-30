@@ -26,7 +26,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
         public async Task Complete(DiagnosticsPayload request, IGrainCallContext grainCallContext)
         {
-            var recorderGrain = await grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
+            var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
             var result = grainCallContext.Result?.ToString();
 
@@ -36,7 +36,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
         public async Task Fail(DiagnosticsPayload request, IGrainCallContext grainCallContext, Exception ex)
         {
-            var recorderGrain = await grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
+            var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
             await recorderGrain.Fail(
                 request.MethodName!, 
@@ -47,7 +47,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
         public async Task Request(DiagnosticsPayload request, IGrainCallContext grainCallContext)
         {
-            var recorderGrain = await grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
+            var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
             var list = new List<string>();
 

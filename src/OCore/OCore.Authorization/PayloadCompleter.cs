@@ -110,7 +110,7 @@ namespace OCore.Authorization
                 throw new UnauthorizedAccessException("Invalid token");
             }
 
-            var tokenGrain = await clusterClient.GetDataEntity<IAccountToken>(payload.Token);
+            var tokenGrain = clusterClient.GetDataEntity<IAccountToken>(payload.Token);
             try
             {
                 var accountInfo = await tokenGrain.Read();
