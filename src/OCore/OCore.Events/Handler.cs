@@ -63,7 +63,7 @@ namespace OCore.Events
         public async override Task OnActivateAsync(CancellationToken cancellationToken)
         {
             var streamProvider = this.GetStreamProvider(GetProviderName());
-            var stream = streamProvider.GetStream<Event<T>>(this.GetPrimaryKey(), FormatStreamNamespace(EventHandlerAttribute));
+            var stream = streamProvider.GetStream<Event<T>>($"{this.GetPrimaryKey()}/{FormatStreamNamespace(EventHandlerAttribute)}");
             await stream.SubscribeAsync(this);
         }
 

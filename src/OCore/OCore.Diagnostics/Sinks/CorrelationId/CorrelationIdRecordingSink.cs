@@ -26,7 +26,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
         public async Task Complete(DiagnosticsPayload request, IGrainCallContext grainCallContext)
         {
-            var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
+            var recorderGrain = await grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
             var result = JsonConvert.SerializeObject(grainCallContext.Result);
 
@@ -36,7 +36,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
         public async Task Fail(DiagnosticsPayload request, IGrainCallContext grainCallContext, Exception ex)
         {
-            var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
+            var recorderGrain = await grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
             await recorderGrain.Fail(
                 request.MethodName!, 
@@ -47,7 +47,7 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
         public async Task Request(DiagnosticsPayload request, IGrainCallContext grainCallContext)
         {
-            var recorderGrain = grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
+            var recorderGrain = await grainFactory.GetDataEntity<ICorrelationIdCallRecorder>(request.CorrelationId);
 
             var list = new List<string>();
 
@@ -55,9 +55,9 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
             sb.Append("(");
 
-            for (int i = 0; i < grainCallContext.Arguments.Length; i++)
+            for (int i = 0; i < grainCallContext.Request.GetArgumentCount(); i++)
             {
-                list.Add(JsonConvert.SerializeObject(grainCallContext.Arguments[i]));
+                list.Add(JsonConvert.SerializeObject(grainCallContext.Request.GetArgument(i)));
             }
 
             sb.Append(string.Join(", ", list.ToArray()));

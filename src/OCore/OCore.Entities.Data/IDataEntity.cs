@@ -12,7 +12,7 @@ namespace OCore.Entities.Data
         /// </summary>
         /// <typeparam name="T">The type</typeparam>
         /// <returns></returns>
-        T Get<T>() where T: IDataEntity, new();
+        ValueTask<T> Get<T>() where T: IDataEntity, new();
     }
 
     public interface IDataEntity<T> : IDataEntity

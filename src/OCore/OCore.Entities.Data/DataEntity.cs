@@ -21,7 +21,7 @@ namespace OCore.Entities.Data
             }
         }
 
-        public T1 Get<T1>() where T1 : IDataEntity, new()
+        public ValueTask<T1> Get<T1>() where T1 : IDataEntity, new()
         {            
             return GrainFactory.GetDataEntity<T1>(this.GetPrimaryKeyString());
         }

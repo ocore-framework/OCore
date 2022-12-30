@@ -16,7 +16,7 @@ namespace OCore.Entities.Data
             throw new NotImplementedException();
         }
 
-        public T1 Get<T1>() where T1 : IDataEntity, new()
+        public ValueTask<T1> Get<T1>() where T1 : IDataEntity, new()
         {
             throw new NotImplementedException();
         }

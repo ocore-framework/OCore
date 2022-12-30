@@ -83,7 +83,13 @@ namespace OCore.Diagnostics.Sinks.Logging
             if (CheckWhetherToLog(grainCallContext) == false) return Task.CompletedTask;
             if (options.LogArguments == true)
             {
-                logger.LogError(ex, $"> {JsonConvert.SerializeObject(grainCallContext.Arguments)}");
+                var list = new List<string>();
+                for (int i = 0; i < grainCallContext.Request.GetArgumentCount(); i++)
+                {
+                    list.Add(JsonConvert.SerializeObject(grainCallContext.Request.GetArgument(i)));
+                }
+                
+                logger.LogError(ex,  string.Join(", ", list.ToArray()));
             }
             return Task.CompletedTask;
         }
