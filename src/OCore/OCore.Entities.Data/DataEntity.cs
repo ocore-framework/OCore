@@ -8,6 +8,15 @@ namespace OCore.Entities.Data
 {
     public abstract class DataEntity<T> : Entity<T>, IDataEntity<T> where T : new()
     {
+        /// <summary>
+        /// Check to see if the data entity exists
+        /// </summary>
+        /// <returns>true if exists, false if it doesn't</returns>
+        public Task<bool> Exists()
+        {
+            return Task.FromResult(Created);
+        }
+
         public virtual Task Create(T data)
         {
             if (Created == false)

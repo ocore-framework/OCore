@@ -12,6 +12,12 @@ namespace OCore.Entities.Data
     public interface IDataEntity<T> : IDataEntity
     {
         /// <summary>
+        /// Check to see if the data entity exists
+        /// </summary>
+        /// <returns></returns>
+        Task<bool> Exists();
+        
+        /// <summary>
         /// Create new data entity. This call will fail if the entity already exists.
         /// </summary>
         /// <param name="data"></param>
