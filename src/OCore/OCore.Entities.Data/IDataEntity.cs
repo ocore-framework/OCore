@@ -49,5 +49,10 @@ namespace OCore.Entities.Data
         /// </summary>
         /// <returns></returns>
         Task Delete();
+
+        /// <summary>
+        /// Commit the state changes to backing store4
+        /// </summary>
+        Task Commit();
     }
 }

@@ -81,5 +81,10 @@ namespace OCore.Entities.Data
                 throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
             }
         }
+
+        public Task Commit()
+        {
+            return WriteStateAsync();
+        }
     }
 }
