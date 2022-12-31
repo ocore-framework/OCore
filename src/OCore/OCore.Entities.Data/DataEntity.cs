@@ -21,9 +21,13 @@ namespace OCore.Entities.Data
             }
         }
 
-        protected T1 Get<T1>() where T1 : IDataEntity
-        {            
-            return GrainFactory.GetDataEntity<T1>(this.GetPrimaryKeyString());
+        protected T1 Get<T1>(string? identity = null) where T1 : IDataEntity
+        {
+            if (identity == null)
+            {
+                identity = this.GetPrimaryKeyString();
+            }
+            return GrainFactory.GetDataEntity<T1>(identity);
         }
 
         public virtual Task<T> Read()
