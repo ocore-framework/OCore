@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using OCore.Authorization;
 using OCore.Diagnostics;
-using OCore;
 using Orleans.Hosting;
 using Orleans.Providers;
 using System;
@@ -16,12 +15,20 @@ namespace OCore.Setup
 {
     public static class Developer
     {
+        static LogLevel LogLevel { get; set; } = LogLevel.Information;
+
         public static async Task LetsGo(
             string applicationTitle = "OCore App Development",
+            LogLevel? logLevel = null,
             Action<IHostBuilder> hostConfigurationDelegate = null,
             Action<ISiloBuilder> siloConfigurationDelegate = null,
             Action<HostBuilderContext, IServiceCollection> serviceConfigurationDelegate = null)
         {
+            if (logLevel.HasValue)
+            {
+                LogLevel = logLevel.Value;
+            }
+
             var hostBuilder = new HostBuilder();
             hostBuilder.DeveloperSetup(siloConfigurationDelegate,                
                 applicationTitle);
@@ -74,7 +81,7 @@ namespace OCore.Setup
                 siloBuilder.AddMemoryGrainStorageAsDefault();
                 siloBuilder.AddOCoreAuthorization();
                 siloBuilder.AddOCoreDeveloperDiagnostics();
-                siloBuilder.ConfigureLogging(builder => builder.SetMinimumLevel(LogLevel.Information));
+                siloBuilder.ConfigureLogging(builder => builder.SetMinimumLevel(LogLevel));
                 siloConfigurationDelegate?.Invoke(siloBuilder);
             });
 

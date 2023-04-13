@@ -1,6 +1,8 @@
 ﻿using Markdig;
 using Markdig.Syntax;
 using Humanizer;
+using System.Reflection;
+using Scriban;
 
 if (args.Length != 2)
 {
@@ -52,7 +54,7 @@ foreach (var element in markdown)
     if (element is ListBlock listBlock)
     {
         foreach (var listItemBlock in listBlock)
-        {            
+        {
             foreach (var listItemDescendant in listItemBlock.Descendants())
             {
                 var listItem = listItemDescendant as ListBlock;
@@ -92,7 +94,7 @@ foreach (var element in markdown)
                             && currentElement is IMethodElement me)
                         {
                             var method = new Method(name, parseResult.ReturnValue, comment, new List<Attribute>());
-                            currentAttribute = method as IAttributeElement; 
+                            currentAttribute = method as IAttributeElement;
                             me.Methods.Add(method);
                         }
                         else if (parseResult.ReturnValue == null
@@ -123,20 +125,53 @@ foreach (var element in markdown)
     }
 }
 
-if (elements.Any()) Directory.CreateDirectory($"src/{applicationName}/Abstractions");
-if (elements.Where(e => e is Service).Any()) Directory.CreateDirectory($"src/{applicationName}/Services");
+var abstractionsDirectory = $"src/{applicationName}/Abstractions";
+var servicesDirectory = $"src/{applicationName}/Services";
+
+if (elements.Any()) Directory.CreateDirectory(abstractionsDirectory);
+if (elements.Where(e => e is Service).Any()) Directory.CreateDirectory(servicesDirectory);
 if (elements.Where(e => e is DataEntity).Any()) Directory.CreateDirectory($"src/{applicationName}/Entities");
 if (elements.Where(e => e is Event).Any()) Directory.CreateDirectory($"src/{applicationName}/Events");
-//if (elements.Where(e => e is Service).Any()) Directory.CreateDirectory($"src/{applicationName}/EventHandlers");
+if (elements.Where(e => e is Event).Any()) Directory.CreateDirectory($"src/{applicationName}/EventHandlers");
 
 foreach (var element in elements)
 {
     Console.WriteLine(element.ToString());
 }
 
+// Generate templates
+
+// IService/Service
+if (elements.Where(e => e is Service).Any())
+{
+    var iServiceTemplate = ReadResource("OCore.MDGen.Templates.IService.template");
+    var serviceTemplate = ReadResource("OCore.MDGen.Templates.Service.template");
+
+    foreach (var service in elements.Where(e => e is Service
+                                                && e != null)
+                                    .Select(e => e as Service))
+    {
+        var iServiceScribanTemplate = Template.Parse(iServiceTemplate);
+        var serviceScribanTemplate = Template.Parse(serviceTemplate);
+        var iServiceResult = iServiceScribanTemplate.Render(service);
+        var serviceResult = serviceScribanTemplate.Render(service);
+
+        File.WriteAllText(Path.Combine(abstractionsDirectory, $"I{service!.Name}Service.cs"), iServiceResult);
+        File.WriteAllText(Path.Combine(servicesDirectory, $"{service!.Name}Service.cs"), serviceResult);
+    }
+}
+
 ;
 
+string ReadResource(string resourceName)
+{    
+    var assembly = Assembly.GetExecutingAssembly();    
 
+    using Stream? stream = assembly.GetManifestResourceStream(resourceName);
+    using StreamReader reader = new StreamReader(stream!);
+
+    return reader.ReadToEnd();
+}
 
 // Lines are typically Name : Type - Comment
 //                     Name -> ReturnValue - Comment
@@ -161,7 +196,7 @@ ParseResult ParseLine(string line, char bulletType, Section currentSection)
         var methodSplit = commentSplit[0].Split("=>");
         if (methodSplit.Length > 1)
         {
-            returnType = methodSplit[1];
+            returnType = methodSplit[1].Trim();
         }
         else
         {
@@ -189,35 +224,35 @@ ParseResult ParseLine(string line, char bulletType, Section currentSection)
 
 record ParseResult(string Name, string? Comment, string? ReturnValue, string? DataType);
 
-enum Section { None, Services, Entities, Events, EventHandlers, Exceptions };
+public enum Section { None, Services, Entities, Events, EventHandlers, Exceptions };
 
-interface IElement { }
+public interface IElement { }
 
-interface IMethodElement
+public interface IMethodElement
 {
     public List<Method> Methods { get; }
 }
 
-interface IDataElement
+public interface IDataElement
 {
     public List<DataMember> Data { get; }
 }
 
-interface IAttributeElement
+public interface IAttributeElement
 {
     public List<Attribute> Attributes { get; }
 }
 
-record Service(string Name, string? Comment, List<Method> Methods) : IElement, IMethodElement;
+public record Service(string Name, string? Comment, List<Method> Methods) : IElement, IMethodElement;
 
-record DataEntity(string Name, string? Comment, List<DataMember> Data, List<Method> Methods) : IElement, IMethodElement, IDataElement;
+public record DataEntity(string Name, string? Comment, List<DataMember> Data, List<Method> Methods) : IElement, IMethodElement, IDataElement;
 
-record Exception(string Name, string? Comment) : IElement;
+public record Exception(string Name, string? Comment) : IElement;
 
-record Event(string Name, string? Comment, IEnumerable<DataMember> Data) : IElement;
+public record Event(string Name, string? Comment, IEnumerable<DataMember> Data) : IElement;
 
-record DataMember(string Name, string? Type, List<Attribute> Attributes) : IAttributeElement;
+public record DataMember(string Name, string? Type, List<Attribute> Attributes) : IAttributeElement;
 
-record Method(string Name, string ReturnValue, string? Comment, List<Attribute> Attributes) : IAttributeElement;
+public record Method(string Name, string ReturnValue, string? Comment, List<Attribute> Attributes) : IAttributeElement;
 
-record Attribute(string Name, string? Value);
+public record Attribute(string Name, string? Value);

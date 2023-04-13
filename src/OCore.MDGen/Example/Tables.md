@@ -29,17 +29,20 @@ GOAL:
 - Customer
     * New table => Table - Hihi, these are similar to check in/check out for the waiter
         - Fails with : Restaurant is full
-    * Adieu    
+    * Adieu - The customer is settled and wants to go home
 - Waiter
-    - Check in
-    - Check out
+    - Check in : Waiter
+    - Check out : Waiter
 
 ## Entities
 
 - Table
     - Number - "The customer at table number 4 needs another shot of Vaccine" Does it make sense that "Number" is recognized as an int automatically? Perhaps make some assumptions on name of the field? I feel this will be using Humanizer-library heavily
+    - Settled : bool
 - Customer - The customer is probably anonymous in this case
-    - Settle : Settlement
+    * Settle : Settlement
+        - Fails with
+            - Insufficient funds
 - Order
     - Table - It is linked like this because an order could move from one table to another
     - Total, summed Item : decimal
@@ -60,8 +63,8 @@ GOAL:
     - Order
     - SettledBy : Customer
     - Tip : decimal - Waiters need love too
-    - Fails with
-        - Insufficient funds
+- Waiter
+    - Name
 
 ## Events
 
@@ -73,4 +76,4 @@ GOAL:
 ## Exceptions
 
 - Restaurant is full - "Sorry sir and or madame, it is full"
-- Insufficient funds - "You don't seem to be able to pay for yourself, you drunken bastard."
+- Insufficient funds - "You don't seem to be able to pay for yourself, you drunken fool."

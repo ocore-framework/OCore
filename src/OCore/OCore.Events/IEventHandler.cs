@@ -5,7 +5,7 @@ using System.Text;
 
 namespace OCore.Events
 {
-    public interface IEventHandler : IGrainWithGuidKey
+    public interface IEventHandler : IGrainWithStringKey
     {
     }
 }

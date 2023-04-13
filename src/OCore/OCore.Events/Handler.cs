@@ -26,7 +26,7 @@ namespace OCore.Events
                     eventAttribute = typeof(T).GetCustomAttribute<EventAttribute>();
                     if (eventAttribute == null)
                     {
-                        throw new InvalidOperationException("EventHandler must have an [EventHandler]-attribute");
+                        throw new InvalidOperationException("Handler must have a [Handler]-attribute");
                     }
                 }
                 return eventAttribute;
@@ -59,7 +59,7 @@ namespace OCore.Events
             return EventAttribute?.Options?.ProviderName ?? "BaseStreamProvider";            
         }
 
-        public async override Task OnActivateAsync(CancellationToken cancellationToken)
+        public override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
             var streamProvider = this.GetStreamProvider(GetProviderName());
             var stream = streamProvider.GetStream<Event<T>>($"{this.GetPrimaryKey()}/{FormatStreamNamespace(EventHandlerAttribute)}");

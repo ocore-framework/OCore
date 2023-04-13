@@ -1,2 +1,26 @@
-﻿@model Service
+﻿using OCore.Services;
+
+{{~ if comment != null ~}}
+/// <summary>
+/// {{comment}}
+/// </summary>
+{{~ end ~}}
+[Service("{{name}}Service")]
+public interface I{{name}}Service : IService 
+{
+	{{~ for method in methods ~}}
+		{{~ if method.comment != null ~}}
+	/// <summary>
+	/// {{ method.comment }}
+	/// </summary>
+		{{~ end ~}}
+		{{~ if method.return_value == "void" ~}}
+	Task {{ method.name }}();
+
+		{{~ else ~}}
+	Task<{{ method.return_value }}> {{ method.name }}();
+
+		{{~ end ~}}
+	{{~ end ~}}
+}
 
