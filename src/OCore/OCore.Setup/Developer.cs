@@ -20,6 +20,7 @@ namespace OCore.Setup
         public static async Task LetsGo(
             string applicationTitle = "OCore App Development",
             LogLevel? logLevel = null,
+            bool block = true,
             Action<IHostBuilder> hostConfigurationDelegate = null,
             Action<ISiloBuilder> siloConfigurationDelegate = null,
             Action<HostBuilderContext, IServiceCollection> serviceConfigurationDelegate = null)
@@ -39,7 +40,10 @@ namespace OCore.Setup
             hostConfigurationDelegate?.Invoke(hostBuilder);
             var host = hostBuilder.Build();
             await host.StartAsync();
-            Console.ReadLine();
+            if (block == true)
+            {
+                Console.ReadLine();
+            }
         }
 
         public static IHostBuilder DeveloperSetup(this IHostBuilder hostBuilder,
