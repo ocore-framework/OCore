@@ -9,7 +9,6 @@ Opinionated and experimental application stack built on Microsoft Orleans and fr
 New dotnet core console application. Add from nuget:
 
 - `OCore.Setup`
-- `Microsoft.Orleans.CodeGenerator.MSBuild`
 
 Type:
 
@@ -17,22 +16,22 @@ Type:
 using OCore.Services;
 await OCore.Setup.DeveloperExtensions.LetsGo();
 
-namespace HelloWorld
+namespace HelloWorld;
+
+[Service("HelloWorld")]
+public interface IHelloWorldService : IService
 {
-    [Service("HelloWorld")]
-    public interface IHelloWorldService : IService
+    Task<string> SayHelloTo(string name);
+}
+
+public class HelloWorldService : Service, IHelloWorldService
+{
+    public Task<string> SayHelloTo(string name)
     {
-        Task<string> SayHelloTo(string name);
-    }
-    
-    public class HelloWorldService : Service, IHelloWorldService
-    {
-        public Task<string> SayHelloTo(string name)
-        {
-            return Task.FromResult($"Hello, {name}! It is a beautiful world! And you are my favorite part of it!");
-        }
+        return Task.FromResult($"Hello, {name}! It is a beautiful world! And you are my favorite part of it!");
     }
 }
+
 ```
 
 Press F5 and POST (using Postman/VS Code REST client):
@@ -41,7 +40,7 @@ Press F5 and POST (using Postman/VS Code REST client):
 ### Say hello to the world
 POST http://localhost:9000/services/HelloWorld/SayHelloTo
 
-"COCPORN"
+"OCore"
 ```
 
 You can also visit http://localhost:9000/swagger to see the OpenApi generated docs.
@@ -59,8 +58,8 @@ POST http://localhost:9000/data/CorrelationIdRecorder/[INSERT ID HERE]/tomermaid
 sequenceDiagram
    participant HTTP
    participant SayHelloTo
-   HTTP->>+SayHelloTo: ("COCPORN")   
-   SayHelloTo->>-HTTP: ("Hello, COCPORN")
+   HTTP->>+SayHelloTo: ("OCore")   
+   SayHelloTo->>-HTTP: ("Hello, OCore")
 ```
 
 **nuget packages** are built automatically when version numbers are increased.
@@ -151,10 +150,10 @@ Using Postman or the Visual Studio Code REST client (I will be using this in the
 ### Say Hello
 POST http://localhost:9000/service/MyService/Hello
 
-["COCPORN"]
+["OCore"]
 ```
 
-The service will then respond with a 200-message with a string HTTP body of `"Hello, COCPORN"`.
+The service will then respond with a 200-message with a string HTTP body of `"Hello, OCore"`.
 
 ### Parameter passing
 
@@ -212,7 +211,7 @@ There is support for running asynchronous action filters, although these are not
 There is currently a loosely typed Service client that works in Blazor and other dotnet projects (the interface for this _will change_):
 
 ```csharp
-var (response, status) = await Client.Invoke<IMyService, string>("Hello", "COCPORN");
+var (response, status) = await Client.Invoke<IMyService, string>("Hello", "OCore");
 ```
 
 I am toying with the idea of making a strongly typed client using Roslyn code generation.
@@ -281,7 +280,7 @@ If `MapDataEntities` is called (as is default by `UseDefaultOCore`), you can now
 POST http://localhost:9000/data/ShortenedUrl/SomeId
 
 {
-    "RedirectTo": "http://www.cocporn.com"
+    "RedirectTo": "http://www.github.com"
 }
 ```
 
@@ -296,7 +295,7 @@ GET http://localhost:9000/data/ShortenedUrl/SomeId
 
 ```json
 {
-    "RedirectTo": "http://www.cocporn.com",
+    "RedirectTo": "http://www.github.com",
     "TimesVisited": 0
 }
 ```
