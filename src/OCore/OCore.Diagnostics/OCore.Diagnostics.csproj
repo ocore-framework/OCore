@@ -10,7 +10,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />		
-		<PackageReference Include="Microsoft.Orleans.Server" Version="7.0.0" />		
+		<PackageReference Include="Microsoft.Orleans.Server" Version="7.1.2" />		
 	</ItemGroup>
 
 	<ItemGroup>
