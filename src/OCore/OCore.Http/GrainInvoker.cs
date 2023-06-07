@@ -68,9 +68,9 @@ namespace OCore.Http
         }
 
 
-        public async Task Invoke(IGrain grain, HttpContext context)
+        public async Task Invoke(IGrain grain, HttpContext context, string body)
         {
-            object[] parameterList = await GetParameterList(context);
+            object[] parameterList = GetParameterList(body);
             Task grainCall;
             grainCall = (Task)MethodInfo.Invoke(grain, parameterList);
 
@@ -93,9 +93,9 @@ namespace OCore.Http
             }
         }
 
-        public async Task Invoke(IGrain[] grains, HttpContext context)
+        public async Task Invoke(IGrain[] grains, HttpContext context, string body)
         {
-            object[] parameterList = await GetParameterList(context);
+            object[] parameterList = GetParameterList(body);
             List<Task> grainCalls = new List<Task>();
             foreach (var grain in grains)
             {
@@ -106,10 +106,9 @@ namespace OCore.Http
             {
                 await Task.WhenAll(grainCalls);
             }
-            catch (Exception)
-            {
-
-            }
+            // This is supposed to be catch-all, the exceptions are checked below
+            catch 
+            { }
 
             List<object> results = new List<object>();
 
@@ -148,7 +147,7 @@ namespace OCore.Http
             await JsonSerializer.SerializeAsync(writer.AsStream(), obj, obj.GetType());
         }
 
-        protected abstract Task<object[]> GetParameterList(HttpContext context);
+        protected abstract object[] GetParameterList(string body);
 
         static Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>()
         {

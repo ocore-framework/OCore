@@ -1,4 +1,5 @@
-﻿using OCore.Entities.Data.Extensions;
+﻿using System.Reflection.Metadata.Ecma335;
+using OCore.Entities.Data.Extensions;
 using Orleans;
 using System.Threading.Tasks;
 
@@ -51,6 +52,7 @@ namespace OCore.Entities.Data
             }
         }
 
+        /// <inheritdoc />
         public virtual Task Update(T data)
         {
             if (Created == true)
@@ -62,6 +64,27 @@ namespace OCore.Entities.Data
             {
                 throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
             }
+        }
+
+        /// <inheritdoc />
+        public async Task PartialUpdate(T data, string[] fields)
+        {
+            if (Created is true && State is not null)
+            {
+                foreach (var field in fields)
+                {
+                    // Check if the data has the field using reflection
+                    var property = State.GetType().GetProperty(field);
+                    
+                    // If the property exists, update the value
+                    if (property != null)
+                    {
+                        property.SetValue(State, property.GetValue(data));
+                    }
+                }
+            }
+
+            await WriteStateAsync();
         }
 
         public virtual Task Upsert(T data)

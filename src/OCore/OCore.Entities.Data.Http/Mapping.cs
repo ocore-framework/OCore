@@ -159,6 +159,12 @@ namespace OCore.Entities.Data.Http
                 routesRegistered++;
             }
 
+            if (dataEntityMethods.HasFlag(DataEntityMethods.PartialUpdate))
+            {
+                Register(HttpMethod.Patch);
+                routesRegistered++;
+            }
+
             return routesRegistered;
         }
 

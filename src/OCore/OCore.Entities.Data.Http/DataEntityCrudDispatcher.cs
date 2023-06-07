@@ -7,6 +7,7 @@ using OCore.Authorization.Abstractions.Request;
 using OCore.Http;
 using Orleans;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
@@ -54,7 +55,12 @@ namespace OCore.Entities.Data.Http
                     routeBuilder.MapPut(GetRoutePattern().RawText, Dispatch);
                     methodInfo = typeof(IDataEntity<>).MakeGenericType(dataEntityType).GetMethod("Update");
                     break;
+                case HttpMethod.Patch:
+                    routeBuilder.MapPatch(GetRoutePattern().RawText, Dispatch);
+                    methodInfo = typeof(IDataEntity<>).MakeGenericType(dataEntityType).GetMethod("PartialUpdate");
+                    break;
             }
+
             invoker = new DataEntityGrainInvoker(routeBuilder.ServiceProvider, grainType, methodInfo, dataEntityType)
             {
                 IsCrudOperation = true,
@@ -97,7 +103,10 @@ namespace OCore.Entities.Data.Http
 
                         try
                         {
-                            await invoker.Invoke(grain, httpContext);
+                            using var reader = new StreamReader(context.Request.Body);
+                            var body = await reader.ReadToEndAsync();
+                            
+                            await invoker.Invoke(grain, httpContext, body);
                             httpContext.RunActionFiltersExecuted(invoker);
                         }
                         catch (DataCreationException ex)
@@ -107,6 +116,7 @@ namespace OCore.Entities.Data.Http
                                 case HttpMethod.Get:
                                 case HttpMethod.Delete:
                                 case HttpMethod.Put:
+                                case HttpMethod.Patch:
                                     throw new StatusCodeException(HttpStatusCode.NotFound, ex.Message, ex);
                                 default:
                                     throw;
@@ -118,8 +128,11 @@ namespace OCore.Entities.Data.Http
                         // Do the fan-out
                         if (httpMethod == HttpMethod.Get)
                         {
+                            using var reader = new StreamReader(context.Request.Body);
+                            var body = await reader.ReadToEndAsync();
+                            
                             var grains = grainKeys.Select(x => clusterClient.GetGrain(grainType, x)).ToArray();
-                            await invoker.Invoke(grains, context);
+                            await invoker.Invoke(grains, context, body);
                             httpContext.RunActionFiltersExecuted(invoker);
                         }
                         else
@@ -156,6 +169,5 @@ namespace OCore.Entities.Data.Http
                 payloadCompleter,
                 httpMethod);
         }
-
     }
 }

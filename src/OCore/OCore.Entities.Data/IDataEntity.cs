@@ -38,6 +38,16 @@ namespace OCore.Entities.Data
         Task Update(T data);
 
         /// <summary>
+        /// Do a partial update of the data in the entity. This call will fail is the entity does not exist.
+        ///
+        /// This only updates the fields specified in the fields array.
+        /// </summary>
+        /// <param name="data">The incoming data</param>
+        /// <param name="fields">Fields to copy over, if present</param>
+        /// <returns></returns>
+        Task PartialUpdate(T data, string[] fields);
+        
+        /// <summary>
         /// Update the data if the entity exists or create the entity if it does not exist.
         /// </summary>
         /// <param name="data"></param>
@@ -51,7 +61,7 @@ namespace OCore.Entities.Data
         Task Delete();
 
         /// <summary>
-        /// Commit the state changes to backing store4
+        /// Commit the state changes to backing store.
         /// </summary>
         Task Commit();
     }

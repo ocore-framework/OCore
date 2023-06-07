@@ -7,6 +7,7 @@ using OCore.Authorization.Abstractions.Request;
 using OCore.Http;
 using Orleans;
 using System;
+using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -69,7 +70,10 @@ namespace OCore.Entities.Data.Http
                         return;
                     }
 
-                    await invoker.Invoke(grain, httpContext);
+                    using var reader = new StreamReader(context.Request.Body);
+                    var body = await reader.ReadToEndAsync();
+                    
+                    await invoker.Invoke(grain, httpContext, body);
                     httpContext.RunActionFiltersExecuted(invoker);
                 }
                 else

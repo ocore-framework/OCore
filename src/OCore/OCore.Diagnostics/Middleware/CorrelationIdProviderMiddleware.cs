@@ -36,14 +36,8 @@ namespace OCore.Diagnostics.Middleware
             //RequestContext.Set("D:CorrelationId", correlationId);
 
             string? correlationId = null;
-
-
-            var correlationIdKeyName = options.Value.CorrelationIdHeader;
-
-            if (correlationIdKeyName == null)
-            {
-                correlationIdKeyName = "correlationid";
-            }
+            
+            var correlationIdKeyName = options.Value.CorrelationIdHeader ?? "correlationId";
 
             if (context.Request.Headers.TryGetValue(correlationIdKeyName, out var correlationIdHeader))
             {
