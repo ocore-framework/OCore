@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using OCore.Http;
 
 namespace OCore.Setup
 {
@@ -37,6 +38,11 @@ namespace OCore.Setup
             if (RequestContext.Get("D:CorrelationId") is string correlationId)
             {
                 context.Response.Headers.Add("CorrelationId", correlationId);
+            }
+
+            if (ex is StatusCodeException sce)
+            {
+                code = sce.StatusCode;
             }
 
             var result = JsonConvert.SerializeObject(new { error = ex.ToString() });
