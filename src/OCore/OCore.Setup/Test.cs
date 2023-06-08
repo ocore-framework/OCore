@@ -23,6 +23,7 @@ public static class Test
         LogLevel? logLevel = null,
         Action<IHostBuilder> hostConfigurationDelegate = null,
         Action<ISiloBuilder> siloConfigurationDelegate = null,
+        Action<IWebHostBuilder> webBuilderConfigurationDelegate = null,
         Action<HostBuilderContext, IServiceCollection> serviceConfigurationDelegate = null)
     {
         if (logLevel.HasValue)
@@ -32,6 +33,7 @@ public static class Test
 
         var hostBuilder = new HostBuilder();
         hostBuilder.TestSetup(siloConfigurationDelegate,
+            webBuilderConfigurationDelegate,
             applicationTitle);
         
         if (serviceConfigurationDelegate != null)
@@ -49,6 +51,7 @@ public static class Test
 
     public static IHostBuilder TestSetup(this IHostBuilder hostBuilder,
         Action<ISiloBuilder> siloConfigurationDelegate = null,
+        Action<IWebHostBuilder> webBuilderConfigurationDelegate = null,
         string applicationName = "OCore App Development")
     {
         var configuration = new ConfigurationBuilder()
@@ -73,6 +76,10 @@ public static class Test
             webBuilder.UseUrls("http://*:9000");
             webBuilder.UseStartup<DeveloperStartup>();
             webBuilder.UseSetting("ApplicationTitle", applicationName);
+            if (webBuilderConfigurationDelegate != null)
+            {
+                webBuilderConfigurationDelegate(webBuilder);       
+            }
         });
 
         hostBuilder.UseOrleans((hostBuilderContext, siloBuilder) =>
