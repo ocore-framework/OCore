@@ -39,8 +39,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{1D481FC6
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.MDGen", "..\OCore.MDGen\OCore.MDGen.csproj", "{8F750DB7-F1E4-47F4-AA40-77E3E5F9CE06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Authentication.Jwt", "OCore.Authentication.Jwt\OCore.Authentication.Jwt.csproj", "{809DB010-E6E2-4CB6-888B-40BF79376DFB}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{ADF558AA-D120-4417-975E-EE9380E747D2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Tests", "OCore.Tests\OCore.Tests.csproj", "{C0EF406B-F196-41F3-90E1-31D9477661A3}"
