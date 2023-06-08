@@ -3,6 +3,7 @@ using Orleans;
 using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO.Pipelines;
 using System.Linq;
 using System.Reflection;
@@ -59,7 +60,7 @@ namespace OCore.Http
 
             foreach (var parameter in parameters)
             {
-                this.Parameters.Add(new Parameter
+                Parameters.Add(new Parameter
                 {
                     Name = parameter.Name,
                     Type = parameter.ParameterType
@@ -149,16 +150,16 @@ namespace OCore.Http
 
         protected abstract object[] GetParameterList(string body);
 
-        static Dictionary<Type, Func<object, object>> Converters = new Dictionary<Type, Func<object, object>>()
+        static Dictionary<Type, Func<object, object>> Converters = new()
         {
             { typeof(string), s => s.ToString() },
-            { typeof(int), s => int.Parse(s.ToString()) },
+            { typeof(int), s => int.Parse(s.ToString(), CultureInfo.InvariantCulture) },
             { typeof(DateTime), s => DateTime.Parse(s.ToString()) },
             { typeof(DateTimeOffset), s => DateTimeOffset.Parse(s.ToString()) },
             { typeof(TimeSpan), s => TimeSpan.Parse(s.ToString()) },
-            { typeof(double), s => double.Parse(s.ToString()) },
-            { typeof(float), s => float.Parse(s.ToString()) },
-            { typeof(decimal), s => decimal.Parse(s.ToString()) }
+            { typeof(double), s => double.Parse(s.ToString(), CultureInfo.InvariantCulture) },
+            { typeof(float), s => float.Parse(s.ToString(), CultureInfo.InvariantCulture) },
+            { typeof(decimal), s => decimal.Parse(s.ToString(), CultureInfo.InvariantCulture) }
         };
 
         protected object ProjectValue(object deserializedValue, Parameter parameter)
