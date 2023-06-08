@@ -237,6 +237,7 @@ By default, a `DataEntity` only provides `Read`-access. Depending on how you set
 - `Update` (mapped to `PUT`)
 - `Upsert` (not mapped)
 - `Delete` (mapped to `DELETE`)
+- `PartialUpdate` (mapped to `PATCH`)
 
 If an entity is not created, all calls except `POST` will fail over HTTP.
 
