@@ -70,14 +70,18 @@ namespace OCore.Entities.Data.Http
 
         private object[] GetCrudBodyEntityParameters(string body)
         {
-            return new object[] { JsonSerializer.Deserialize(body, entityType) };
+            if (HttpMethod != HttpMethod.Patch)
+            {
+                return new object[] { JsonSerializer.Deserialize(body, entityType) };
+            }
+            else
+            {
+                return new object[] { JsonSerializer.Deserialize(body, entityType), GetBodyKeys(body) };
+            }
         }
 
-        private async Task<string[]> GetBodyKeys(HttpContext context)
+        private string[] GetBodyKeys(string body)
         {
-            using var reader = new StreamReader(context.Request.Body);
-            var body = await reader.ReadToEndAsync();
-            
             JsonDocument jsonDocument = JsonDocument.Parse(body);
 
             // Get the root element of the JSON document

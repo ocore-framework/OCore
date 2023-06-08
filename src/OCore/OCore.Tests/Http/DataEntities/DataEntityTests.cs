@@ -44,9 +44,12 @@ public class DataEntityTests : FullHost<ZooSeeder>
                     CallCount = 0
                 });
         
-        var response = await _httpClient.PatchAsync("/data/Animal/Hound2", new StringContent("{\"Noise\": \"Woof\"}", Encoding.UTF8, "application/json"));
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        var patchResponse = await _httpClient.PatchAsync("/data/Animal/Hound", new StringContent("{\"Noise\": \"WOOOF!!!\"}", Encoding.UTF8, "application/json"));
+        Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
         
-        
+        var getResponse = await _httpClient.GetAsync("/data/Animal/Hound");
+        var body = await getResponse.Content.ReadAsStringAsync();
+        Assert.Contains("WOOOF!!!", body);
+        Assert.Contains("Beast", body);
     }
 }

@@ -82,9 +82,13 @@ namespace OCore.Entities.Data
                         property.SetValue(State, property.GetValue(data));
                     }
                 }
+                await WriteStateAsync();
+            }
+            else
+            {
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
 
-            await WriteStateAsync();
         }
 
         public virtual Task Upsert(T data)
