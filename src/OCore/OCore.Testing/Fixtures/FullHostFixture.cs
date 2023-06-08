@@ -1,6 +1,7 @@
-﻿using OCore.Tests.Abstractions;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 
-namespace OCore.Tests.Fixtures;
+namespace OCore.Testing.Fixtures;
 
 public class FullHostFixture 
 {

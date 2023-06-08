@@ -1,6 +1,9 @@
-﻿using OCore.Tests.Abstractions;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
+using OCore.Testing.Abstractions;
+using Xunit;
 
-namespace OCore.Tests.Fixtures;
+namespace OCore.Testing.Fixtures;
 
 public class FullHostFixture<TSeeder> : IAsyncLifetime
     where TSeeder : ISeeder, new()

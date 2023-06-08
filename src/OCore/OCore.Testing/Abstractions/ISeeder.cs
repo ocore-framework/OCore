@@ -1,4 +1,4 @@
-﻿namespace OCore.Tests.Abstractions;
+﻿namespace OCore.Testing.Abstractions;
 
 public interface ISeeder
 {

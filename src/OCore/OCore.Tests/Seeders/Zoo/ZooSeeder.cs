@@ -1,5 +1,5 @@
 ﻿using OCore.Entities.Data.Extensions;
-using OCore.Tests.Abstractions;
+using OCore.Testing.Abstractions;
 using OCore.Tests.DataEntities;
 
 namespace OCore.Tests.Seeders.Zoo;

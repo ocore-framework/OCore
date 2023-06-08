@@ -1,9 +1,9 @@
-﻿using OCore.Tests.Abstractions;
-using OCore.Tests.Fixtures;
+﻿using Microsoft.Extensions.Hosting;
+using OCore.Testing.Fixtures;
+using Xunit;
 
-namespace OCore.Tests.Host;
+namespace OCore.Testing.Host;
 
-[Collection("Sequential")]
 public class FullHost : IClassFixture<FullHostFixture>
 {
     FullHostFixture _fixture;
