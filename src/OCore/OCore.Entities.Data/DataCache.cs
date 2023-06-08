@@ -12,9 +12,9 @@ namespace OCore.Entities.Data
             this.dataSource = dataSource;
         }
 
-        public Type DataSourceType { get; set; } = typeof(T);
+        public Type DataSourceType { get; } = typeof(T);
 
-        public DateTimeOffset RefreshedAt { get; set; }
+        public DateTimeOffset RefreshedAt { get; private set; }
 
         public TimeSpan CacheFor { get; set; }
 
@@ -52,10 +52,7 @@ namespace OCore.Entities.Data
                 }
                 return data;
             }
-            set
-            {
-                data = value;
-            }
+            set => data = value;
         }
     }
 }

@@ -26,7 +26,7 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity already created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity already created: {typeof(T)}");
             }
         }
 
@@ -47,10 +47,12 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                //throw new Exception($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
         }
 
+        /// <inheritdoc />
         public virtual Task Update(T data)
         {
             if (Created == true)
@@ -60,8 +62,33 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
+        }
+
+        /// <inheritdoc />
+        public async Task PartialUpdate(T data, string[] fields)
+        {
+            if (Created is true && State is not null)
+            {
+                foreach (var field in fields)
+                {
+                    // Check if the data has the field using reflection
+                    var property = State.GetType().GetProperty(field);
+                    
+                    // If the property exists, update the value
+                    if (property != null)
+                    {
+                        property.SetValue(State, property.GetValue(data));
+                    }
+                }
+                await WriteStateAsync();
+            }
+            else
+            {
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
+            }
+
         }
 
         public virtual Task Upsert(T data)
@@ -78,7 +105,7 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
         }
 

@@ -21,7 +21,7 @@ namespace OCore.Authorization.Abstractions
         Tenant,
 
         /// <summary>        
-        /// This end-point needs a <i>projected</i> account, meaning that the accound needs 
+        /// This end-point needs a <i>projected</i> account, meaning that the account needs 
         /// to be registered with the relevant tenant
         /// </summary>
         TokenAndTenant,

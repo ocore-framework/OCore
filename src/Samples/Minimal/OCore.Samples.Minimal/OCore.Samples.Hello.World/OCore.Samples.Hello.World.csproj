@@ -11,11 +11,8 @@
 	  <ProjectReference Include="..\..\..\..\OCore\OCore.Setup\OCore.Setup.csproj" />
 	</ItemGroup>
 	
-	  <ProjectReference Include="..\..\..\..\OCore\OCore.Setup\OCore.Setup.csproj" />
-
 	<ItemGroup>		
-		<PackageReference Include="Microsoft.Orleans.Sdk" Version="7.0.0" />
-		<!--<PackageReference Include="Microsoft.Orleans.Core.Abstractions" Version="7.0.0" />-->		
+		<PackageReference Include="Microsoft.Orleans.Sdk" Version="7.1.2" />		
 	</ItemGroup>
 
 </Project>

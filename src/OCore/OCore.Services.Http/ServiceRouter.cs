@@ -11,6 +11,7 @@ using Orleans;
 using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -72,8 +73,10 @@ namespace OCore.Services.Http
                     return;
                 }
 
+                using var reader = new StreamReader(context.Request.Body);
+                var body = await reader.ReadToEndAsync();
 
-                await invoker.Invoke(grain, context);
+                await invoker.Invoke(grain, context, body);
                 context.RunActionFiltersExecuted(invoker);
             });
         }

@@ -3,6 +3,7 @@ using OCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -15,14 +16,16 @@ namespace OCore.Entities.Data.Http
         Get,
         Post,
         Put,
-        Delete
+        Delete,
+        Patch,
     }
 
     public class DataEntityGrainInvoker : GrainInvoker
     {
         Type entityType;
 
-        public DataEntityGrainInvoker(IServiceProvider serviceProvider, Type grainType, MethodInfo methodInfo, Type entityType) :
+        public DataEntityGrainInvoker(IServiceProvider serviceProvider, Type grainType, MethodInfo methodInfo,
+            Type entityType) :
             base(serviceProvider, grainType, methodInfo)
         {
             this.entityType = entityType;
@@ -32,19 +35,19 @@ namespace OCore.Entities.Data.Http
 
         public HttpMethod HttpMethod { get; set; }
 
-        protected override async Task<object[]> GetParameterList(HttpContext context)
+        protected override object[] GetParameterList(string body)
         {
             if (IsCrudOperation == false)
             {
-                return await GetCallParameters(context);
+                return GetCallParameters(body);
             }
             else
             {
-                return await GetCrudParameters(context);
+                return GetCrudParameters(body);
             }
         }
 
-        async Task<object[]> GetCrudParameters(HttpContext context)
+        object[] GetCrudParameters(string body)
         {
             if (HttpMethod == HttpMethod.NotSet)
             {
@@ -58,60 +61,86 @@ namespace OCore.Entities.Data.Http
                     return new object[] { };
                 case HttpMethod.Post:
                 case HttpMethod.Put:
-                    return await GetCrudBodyEntityParameters(context);
+                case HttpMethod.Patch:
+                    return GetCrudBodyEntityParameters(body);
                 default:
                     throw new InvalidOperationException("HttpMethod is not set for known CRUD operation");
             }
-
         }
 
-        private async Task<object[]> GetCrudBodyEntityParameters(HttpContext context)
+        private object[] GetCrudBodyEntityParameters(string body)
         {
-            using (var reader = new StreamReader(context.Request.Body))
+            if (HttpMethod != HttpMethod.Patch)
             {
-                var body = await reader.ReadToEndAsync();
                 return new object[] { JsonSerializer.Deserialize(body, entityType) };
             }
+            else
+            {
+                return new object[] { JsonSerializer.Deserialize(body, entityType), GetBodyKeys(body) };
+            }
         }
 
-        async Task<object[]> GetCallParameters(HttpContext context)
+        private string[] GetBodyKeys(string body)
+        {
+            JsonDocument jsonDocument = JsonDocument.Parse(body);
+
+            // Get the root element of the JSON document
+            JsonElement root = jsonDocument.RootElement;
+
+            // Iterate over the properties and print the keys
+            var enumerator = root.EnumerateObject();
+            var count = enumerator.Count();
+            
+            var keys = new string[count];
+            var i = 0;
+            
+            foreach (JsonProperty property in root.EnumerateObject())
+            {
+                keys[i] = property.Name;
+            }
+
+            return keys;
+        }
+
+        object[] GetCallParameters(string body)
         {
             var parameterList = new List<object>();
-            using (var reader = new StreamReader(context.Request.Body))
+
+            if (string.IsNullOrEmpty(body) == true)
             {
-                var body = await reader.ReadToEndAsync();
-
-                if (string.IsNullOrEmpty(body) == true)
-                {
-                    AddDefaultParameters(parameterList);
-                }
-                else if (body[0] == '[')
-                {
-
-                    var deserialized = JsonSerializer.Deserialize<object[]>(body);
-
-                    if (deserialized.Length > Parameters.Count)
-                    {
-                        throw new InvalidOperationException($"Parameter count too high");
-                    }
-
-                    int i = 0;
-                    foreach (var parameter in deserialized)
-                    {
-                        parameterList.Add(ProjectValue(parameter, Parameters[i++]));
-                    }
-
-                    AddDefaultParameters(parameterList);
-                }
-                else
-                {
-                    if (Parameters.Count != 1)
-                    {
-                        throw new InvalidOperationException($"Parameter count mismatch");
-                    }
-                    parameterList.Add(JsonSerializer.Deserialize(body, Parameters[0].Type));
-                }
+                AddDefaultParameters(parameterList);
             }
+            else if (body[0] == '[')
+            {
+                var deserialized = JsonSerializer.Deserialize<object[]>(body);
+
+                if (deserialized.Length > Parameters.Count)
+                {
+                    throw new InvalidOperationException($"Parameter count too high");
+                }
+
+                int i = 0;
+                foreach (var parameter in deserialized)
+                {
+                    parameterList.Add(ProjectValue(parameter, Parameters[i++]));
+                }
+                AddDefaultParameters(parameterList);
+            }
+            else
+            {
+                if (Parameters.Count != 1)
+                {
+                    throw new InvalidOperationException($"Parameter count mismatch");
+                }
+
+                parameterList.Add(JsonSerializer.Deserialize(body, Parameters[0].Type));
+            }
+
+            if (HttpMethod == HttpMethod.Patch)
+            {
+                parameterList.Add(GetCrudBodyEntityParameters(body));
+            }
+            
             return parameterList.ToArray();
         }
 

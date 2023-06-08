@@ -58,7 +58,8 @@ namespace OCore.Entities.Data
         Read = 2,
         Update = 4,
         Delete = 8,
-        All = Create | Read | Update | Delete
+        PartialUpdate = 16,
+        All = Create | Read | Update | Delete | PartialUpdate
     }
 
 

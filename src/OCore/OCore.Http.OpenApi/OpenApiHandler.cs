@@ -291,7 +291,7 @@ namespace OCore.Http.OpenApi
                 entityInterface = methodInfo.ReflectedType.GenericTypeArguments.FirstOrDefault();
             }
 
-            var dataInterface = entityInterface.GetInterfaces()?.FirstOrDefault(type => type.IsGenericType &&
+            var dataInterface = entityInterface.GetInterfaces().FirstOrDefault(type => type.IsGenericType &&
                      type.GetGenericTypeDefinition() == typeof(IDataEntity<>) &&
                     typeof(IDataEntity).IsAssignableFrom(type));
 
