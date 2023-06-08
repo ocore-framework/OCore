@@ -1,23 +1,23 @@
-﻿using OCore.Tests.Fixtures;
+﻿using System.Net;
+using OCore.Tests.Fixtures;
+using OCore.Tests.Host;
+using OCore.Tests.Seeders.Zoo;
 
 namespace OCore.Tests;
 
-public class DevelopmentTests : IClassFixture<FullHostFixture>
+public class DevelopmentTests : FullHost
 {
-    FullHostFixture _fixture;
-
-    private IClusterClient ClusterClient => _fixture.ClusterClient!;
-    private IHost Host => _fixture.Host!;
     
-    
-    public DevelopmentTests(FullHostFixture fixture)
+    public DevelopmentTests(FullHostFixture fixture) : base(fixture)
     {
-        _fixture = fixture;
+        Seed(ZooSeeder.Seed);
     }
     
     [Fact]
-    public async Task Test()
+    public async Task Test404()
     {
-        ;
+        // Make a GET-request to a non-existing endpoint
+        HttpResponseMessage response = await _httpClient.GetAsync("/data/Animal/Dig");
+        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }

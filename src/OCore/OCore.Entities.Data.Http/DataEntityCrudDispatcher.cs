@@ -144,8 +144,7 @@ namespace OCore.Entities.Data.Http
             }
             catch (StatusCodeException ex)
             {
-                await httpContext.SetStatusCode(ex.StatusCode, ex.Message);
-                httpContext.Response.Headers.Clear();
+                await httpContext.SetStatusCode((HttpStatusCode)ex.StatusCode, ex.Message);
             }
         }
 

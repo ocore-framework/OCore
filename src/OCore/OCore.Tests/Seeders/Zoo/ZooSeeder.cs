@@ -6,7 +6,7 @@ namespace OCore.Tests.Seeders.Zoo;
 
 public static class ZooSeeder 
 {
-    public static async Task Seed(this IClusterClient clusterClient)
+    public static async Task Seed(IClusterClient clusterClient)
     {
         var cat = clusterClient.GetDataEntity<IAnimal>("Cat");
         var dog = clusterClient.GetDataEntity<IAnimal>("Dog");

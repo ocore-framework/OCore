@@ -1,22 +1,17 @@
 using OCore.Entities.Data.Extensions;
 using OCore.Tests.DataEntities;
 using OCore.Tests.Fixtures;
+using OCore.Tests.Host;
 using OCore.Tests.Seeders.Zoo;
 
 namespace OCore.Tests;
 
-public class IntegrationTests : IClassFixture<FullHostFixture>
+public class IntegrationTests : FullHost
 {
-    FullHostFixture _fixture;
-
-    private IClusterClient ClusterClient => _fixture.ClusterClient!;
-    private IHost Host => _fixture.Host!;
     
-    
-    public IntegrationTests(FullHostFixture fixture)
+    public IntegrationTests(FullHostFixture fixture) : base(fixture)
     {
-        _fixture = fixture;
-        ClusterClient.Seed().Wait();
+        Seed(ZooSeeder.Seed);
     }
 
     [Fact]

@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata.Ecma335;
-using OCore.Entities.Data.Extensions;
+﻿using OCore.Entities.Data.Extensions;
 using Orleans;
 using System.Threading.Tasks;
 
@@ -27,7 +26,7 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity already created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity already created: {typeof(T)}");
             }
         }
 
@@ -48,7 +47,8 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                //throw new Exception($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
         }
 
@@ -62,7 +62,7 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
         }
 
@@ -101,7 +101,7 @@ namespace OCore.Entities.Data
             }
             else
             {
-                throw new DataCreationException($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
+                throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
         }
 

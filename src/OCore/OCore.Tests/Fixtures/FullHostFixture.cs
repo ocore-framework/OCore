@@ -10,6 +10,19 @@ public class FullHostFixture : IAsyncLifetime
 
     public IClusterClient? ClusterClient { get; private set; }
 
+    private bool _isSeeded = false;
+
+    private object _seedLock = new();
+
+    public void Seed(Func<IClusterClient, Task> seedFunc)
+    {
+        lock (_seedLock)
+        {
+            if (_isSeeded == true) return;
+            seedFunc(ClusterClient!).Wait();
+            _isSeeded = true;
+        }
+    }
 
     public async Task InitializeAsync()
     {
