@@ -16,7 +16,9 @@ public class FullHost : IClassFixture<FullHostFixture>
 
     protected string BaseUrl => $"http://localhost:{PortNumber}";
 
-    protected readonly HttpClient _httpClient = new();
+    private readonly HttpClient _httpClient = new();
+    
+    protected HttpClient HttpClient => _httpClient;
     
     public FullHost(FullHostFixture fixture)
     {

@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 
 namespace OCore.Diagnostics.Entities
 {
-    [Serializable]
     [GenerateSerializer]
     public class CallEntry
     {
@@ -35,8 +34,7 @@ namespace OCore.Diagnostics.Entities
         [Id(5)]
         public string? ExceptionType { get; init; }
     }
-
-    [Serializable]
+    
     [GenerateSerializer]
     public class CorrelationIdCallRecord
     {
@@ -44,7 +42,7 @@ namespace OCore.Diagnostics.Entities
         [Id(0)]
         public List<CallEntry> Entries { get; set; } = new List<CallEntry>();
 
-        [Id(2)]
+        [Id(1)]
         public string? RequestSource { get; set; }
     }
 
@@ -83,13 +81,13 @@ namespace OCore.Diagnostics.Entities
         }
 
         public async Task Fail(string methodName, 
-            string previousMedhodName,
+            string previousMethodName,
             string exceptionType, string message)
         {
             State.Entries.Add(new CallEntry
             {
                 From = methodName,
-                To = previousMedhodName,
+                To = previousMethodName,
                 ExceptionMessage = message,
                 ExceptionType = exceptionType
             });
@@ -166,7 +164,7 @@ namespace OCore.Diagnostics.Entities
 
                 if (entry.Parameters != null)
                 {
-                    sb.AppendLine($"   {from}->>+{to}: {entry.Parameters}");
+                    sb.AppendLine($"   {from}->>+{to}: {TruncateString(entry.Parameters, 15)}");
                 }
 
                 if (entry.Result != null)
@@ -179,8 +177,26 @@ namespace OCore.Diagnostics.Entities
                     sb.AppendLine($"   {from}-x-{to}: {entry.ExceptionType}: {entry.ExceptionMessage}");      
                 }
             }
+            
+            byte[] utf8Bytes = Encoding.UTF8.GetBytes(sb.ToString());
+            return Task.FromResult(Encoding.UTF8.GetString(utf8Bytes));
+        }
 
-            return Task.FromResult(sb.ToString());
+        static string TruncateString(string input, int maxLength)
+        {
+            if (input.Length <= maxLength)
+            {
+                return input;
+            }
+            else
+            {
+                return input.Substring(0, maxLength) + "...";
+            }
+        }
+        
+        public Task<List<CallEntry>> GetEntries()
+        {
+            return Task.FromResult(State.Entries);
         }
     }
 }

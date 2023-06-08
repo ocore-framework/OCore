@@ -18,7 +18,7 @@ public class DataEntityTests : FullHost<ZooSeeder>
     public async Task Test404()
     {
         // Make a GET-request to a non-existing endpoint
-        HttpResponseMessage response = await _httpClient.GetAsync("/data/Animal/Dig");
+        HttpResponseMessage response = await HttpClient.GetAsync("/data/Animal/Dig");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
     
@@ -26,7 +26,7 @@ public class DataEntityTests : FullHost<ZooSeeder>
     public async Task Test200()
     {
         // Make a GET-request to a non-existing endpoint
-        HttpResponseMessage response = await _httpClient.GetAsync("/data/Animal/Dog");
+        HttpResponseMessage response = await HttpClient.GetAsync("/data/Animal/Dog");
         var body = await response.Content.ReadAsStringAsync();
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Contains("Rover", body);
@@ -44,10 +44,10 @@ public class DataEntityTests : FullHost<ZooSeeder>
                     CallCount = 0
                 });
         
-        var patchResponse = await _httpClient.PatchAsync("/data/Animal/Hound", new StringContent("{\"Noise\": \"WOOOF!!!\"}", Encoding.UTF8, "application/json"));
+        var patchResponse = await HttpClient.PatchAsync("/data/Animal/Hound", new StringContent("{\"Noise\": \"WOOOF!!!\"}", Encoding.UTF8, "application/json"));
         Assert.Equal(HttpStatusCode.OK, patchResponse.StatusCode);
         
-        var getResponse = await _httpClient.GetAsync("/data/Animal/Hound");
+        var getResponse = await HttpClient.GetAsync("/data/Animal/Hound");
         var body = await getResponse.Content.ReadAsStringAsync();
         Assert.Contains("WOOOF!!!", body);
         Assert.Contains("Beast", body);

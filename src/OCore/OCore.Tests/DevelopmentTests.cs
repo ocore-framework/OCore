@@ -17,7 +17,7 @@ public class DevelopmentTests : FullHost<ZooSeeder>
     public async Task Test404()
     {
         // Make a GET-request to a non-existing endpoint
-        HttpResponseMessage response = await _httpClient.GetAsync("/data/Animal/Dig");
+        HttpResponseMessage response = await HttpClient.GetAsync("/data/Animal/Dig");
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
 }

@@ -1,4 +1,5 @@
-﻿using OCore.Core;
+﻿using System.Collections.Generic;
+using OCore.Core;
 using OCore.Diagnostics.Entities;
 using OCore.Entities.Data;
 using System.Threading.Tasks;
@@ -18,5 +19,7 @@ namespace OCore.Diagnostics.Abstractions
         Task Fail(string methodName, string previousMethodName, string exceptionType, string message);
 
         Task<string> ToMermaid();
+        
+        Task<List<CallEntry>> GetEntries();
     }
 }

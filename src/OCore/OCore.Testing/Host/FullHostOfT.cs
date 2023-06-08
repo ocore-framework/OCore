@@ -18,11 +18,13 @@ public class FullHost<T> : IClassFixture<FullHostFixture<T>>
 
     protected string BaseUrl => $"http://localhost:{PortNumber}";
 
-    protected readonly HttpClient _httpClient = new();
+    private readonly HttpClient _httpClient = new();
+    
+    protected HttpClient HttpClient => _httpClient;
     
     public FullHost(FullHostFixture<T> fixture) 
     {
         _fixture = fixture;
-        _httpClient.BaseAddress = new Uri(BaseUrl);
+        HttpClient.BaseAddress = new Uri(BaseUrl);
     }
 }
