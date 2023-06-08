@@ -8,11 +8,10 @@ using OCore.Tests.Seeders.Zoo;
 
 namespace OCore.Tests.Http.DataEntities;
 
-public class DataEntityTests : FullHost
+public class DataEntityTests : FullHost<ZooSeeder>
 {
-    public DataEntityTests(FullHostFixture fixture) : base(fixture)
+    public DataEntityTests(FullHostFixture<ZooSeeder> fixture) : base(fixture)
     {
-        Seed(ZooSeeder.Seed);
     }
     
     [Fact]

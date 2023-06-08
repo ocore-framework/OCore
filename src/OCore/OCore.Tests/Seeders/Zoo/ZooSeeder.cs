@@ -4,9 +4,9 @@ using OCore.Tests.DataEntities;
 
 namespace OCore.Tests.Seeders.Zoo;
 
-public static class ZooSeeder 
+public class ZooSeeder : ISeeder 
 {
-    public static async Task Seed(IClusterClient clusterClient)
+    public  async Task Seed(IClusterClient clusterClient)
     {
         var cat = clusterClient.GetDataEntity<IAnimal>("Cat");
         var dog = clusterClient.GetDataEntity<IAnimal>("Dog");

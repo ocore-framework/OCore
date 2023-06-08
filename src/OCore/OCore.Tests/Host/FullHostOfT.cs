@@ -3,10 +3,10 @@ using OCore.Tests.Fixtures;
 
 namespace OCore.Tests.Host;
 
-[Collection("Sequential")]
-public class FullHost : IClassFixture<FullHostFixture>
+public class FullHost<T> : IClassFixture<FullHostFixture<T>>
+    where T : ISeeder, new()
 {
-    FullHostFixture _fixture;
+    FullHostFixture<T> _fixture;
 
     protected IClusterClient ClusterClient => _fixture.ClusterClient!;
 
@@ -18,7 +18,7 @@ public class FullHost : IClassFixture<FullHostFixture>
 
     protected readonly HttpClient _httpClient = new();
     
-    public FullHost(FullHostFixture fixture)
+    public FullHost(FullHostFixture<T> fixture) 
     {
         _fixture = fixture;
         _httpClient.BaseAddress = new Uri(BaseUrl);

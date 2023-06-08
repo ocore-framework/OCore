@@ -6,12 +6,11 @@ using OCore.Tests.Seeders.Zoo;
 
 namespace OCore.Tests;
 
-public class IntegrationTests : FullHost
+public class IntegrationTests : FullHost<ZooSeeder>
 {
     
-    public IntegrationTests(FullHostFixture fixture) : base(fixture)
+    public IntegrationTests(FullHostFixture<ZooSeeder> fixture) : base(fixture)
     {
-        Seed(ZooSeeder.Seed);
     }
 
     [Fact]

@@ -2,7 +2,8 @@
 
 namespace OCore.Tests.Fixtures;
 
-public class FullHostFixture 
+public class FullHostFixture<TSeeder> : IAsyncLifetime
+    where TSeeder : ISeeder, new()
 {
     public int Port { get; set; }
 
@@ -30,6 +31,8 @@ public class FullHostFixture
                 if (counter > 10) throw;
             }
         }
+        var seeder = new TSeeder();
+        await seeder.Seed(ClusterClient);
     }
 
     public async Task DisposeAsync()
