@@ -14,14 +14,13 @@ using Orleans;
 
 namespace OCore.Setup;
 
-public static class Developer
+public static class Test
 {
     static LogLevel LogLevel { get; set; } = LogLevel.Information;
 
-    public static async Task<IClusterClient> LetsGo(
-        string applicationTitle = "OCore App Development",
+    public static async Task<(IClusterClient, IHost)> LetsGo(
+        string applicationTitle = "OCore Test",
         LogLevel? logLevel = null,
-        bool block = true,
         Action<IHostBuilder> hostConfigurationDelegate = null,
         Action<ISiloBuilder> siloConfigurationDelegate = null,
         Action<HostBuilderContext, IServiceCollection> serviceConfigurationDelegate = null)
@@ -32,8 +31,9 @@ public static class Developer
         }
 
         var hostBuilder = new HostBuilder();
-        hostBuilder.DeveloperSetup(siloConfigurationDelegate,
+        hostBuilder.TestSetup(siloConfigurationDelegate,
             applicationTitle);
+        
         if (serviceConfigurationDelegate != null)
         {
             hostBuilder.ConfigureServices(serviceConfigurationDelegate);
@@ -43,15 +43,11 @@ public static class Developer
         var host = hostBuilder.Build();
         var clusterClient = host.Services.GetRequiredService<IClusterClient>();
         await host.StartAsync();
-        if (block == true)
-        {
-            Console.ReadLine();
-        }
 
-        return clusterClient;
+        return (clusterClient, host);
     }
 
-    public static IHostBuilder DeveloperSetup(this IHostBuilder hostBuilder,
+    public static IHostBuilder TestSetup(this IHostBuilder hostBuilder,
         Action<ISiloBuilder> siloConfigurationDelegate = null,
         string applicationName = "OCore App Development")
     {
