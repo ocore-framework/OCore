@@ -1,5 +1,6 @@
 ﻿namespace OCore.Services;
 
+[Service("StringFun")]
 public interface IStringFun : IGrainWithStringKey
 {
     Task<string> ReverseString(string input);
