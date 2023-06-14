@@ -14,11 +14,10 @@ public class IntegrationTests : FullHost<ZooSeeder>
     }
 
     [Fact]
-    public async Task Test1()
+    public async Task ClusterClientTest()
     {
         var cat = ClusterClient.GetDataEntity<IAnimal>("Cat");
         var dog = ClusterClient.GetDataEntity<IAnimal>("Dog");
-
         
         var catNoise = await cat.MakeNoise();
         var dogNoise = await dog.MakeNoise();

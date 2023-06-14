@@ -7,6 +7,8 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using Microsoft.Extensions.Logging;
 
 namespace OCore.Entities.Data.Http
 {
@@ -30,26 +32,31 @@ namespace OCore.Entities.Data.Http
         private static IEnumerable<Type> GetAllTypesThatImplementInterface<T>()
         {
             return AppDomain.CurrentDomain
-            .GetAssemblies()
-            .SelectMany(x => x.GetTypes())
-            .Where(type => type.IsInterface 
-                           && type.GetCustomAttribute<GeneratedCodeAttribute>() == null 
-                           && type.GetInterfaces().Contains(typeof(T)));
+                .GetAssemblies()
+                .SelectMany(x => x.GetTypes())
+                .Where(type => type.IsInterface
+                               && type.GetCustomAttribute<GeneratedCodeAttribute>() == null
+                               && type.GetInterfaces().Contains(typeof(T)));
         }
 
         private static List<Type> DiscoverDataEntitiesToMap()
         {
-            return GetAllTypesThatImplementInterface<IDataEntity>().ToList();
+            var iDataEntityImplementors = GetAllTypesThatImplementInterface<IDataEntity>().ToList();
+            var thatHaveDataEntityAttribute = iDataEntityImplementors.Where(t => t.GetCustomAttributes(true)
+                .Where(attr => attr.GetType() == typeof(DataEntityAttribute)).SingleOrDefault() != null).ToList();
+            return thatHaveDataEntityAttribute;
         }
 
-        private static int MapDataEntityToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix, IPayloadCompleter payloadCompleter)
+        private static int MapDataEntityToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix,
+            IPayloadCompleter payloadCompleter)
         {
             var methods = grainType.GetMethods();
             int routesRegistered = 0;
 
             var dataEntityName = grainType.FullName;
 
-            var dataEntityAttribute = (DataEntityAttribute)grainType.GetCustomAttributes(true).Where(attr => attr.GetType() == typeof(DataEntityAttribute)).SingleOrDefault();
+            var dataEntityAttribute = (DataEntityAttribute)grainType.GetCustomAttributes(true)
+                .Where(attr => attr.GetType() == typeof(DataEntityAttribute)).SingleOrDefault();
 
             var keyStrategy = KeyStrategy.Identity;
             var dataEntityMethods = DataEntityMethods.All;
@@ -63,8 +70,15 @@ namespace OCore.Entities.Data.Http
                 maxFanoutLimit = dataEntityAttribute.MaxFanoutLimit;
             }
 
-            routesRegistered += MapCustomMethods(dataEntityName, keyStrategy, maxFanoutLimit, routes, payloadCompleter, prefix, methods, routesRegistered);
-            routesRegistered += MapCrudMethods(dataEntityName, grainType, keyStrategy, maxFanoutLimit, dataEntityMethods, routes, payloadCompleter, prefix, routesRegistered);
+            var loggerFactory = routes.ServiceProvider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("OCore.Entities.Data.Http.Mapping");
+
+            logger.LogInformation("Mapping routes for DataEntity '{DataEntityName}'", dataEntityName);
+            
+            routesRegistered += MapCustomMethods(dataEntityName, keyStrategy, maxFanoutLimit, routes, payloadCompleter,
+                prefix, methods, routesRegistered);
+            routesRegistered += MapCrudMethods(dataEntityName, grainType, keyStrategy, maxFanoutLimit,
+                dataEntityMethods, routes, payloadCompleter, prefix, routesRegistered);
 
             return routesRegistered;
         }
@@ -78,6 +92,9 @@ namespace OCore.Entities.Data.Http
             MethodInfo[] methods,
             int routesRegistered)
         {
+            var loggerFactory = routeBuilder.ServiceProvider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("OCore.Entities.Data.Http.Mapping");
+
             foreach (var method in methods)
             {
                 var internalAttribute = method.GetCustomAttribute<InternalAttribute>(true);
@@ -92,6 +109,9 @@ namespace OCore.Entities.Data.Http
                         payloadCompleter,
                         method.DeclaringType,
                         method);
+
+
+                    logger.LogInformation(" => '{DataEntityName}': {MethodName}", dataEntityName, method.Name);
 
                     routesRegistered++;
                 }
@@ -110,10 +130,13 @@ namespace OCore.Entities.Data.Http
             string prefix,
             int routesRegistered)
         {
+            var loggerFactory = routeBuilder.ServiceProvider.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("OCore.Entities.Data.Http.Mapping");
+
             var dataEntityType = (
                 from iType in declaringType.GetInterfaces()
                 where iType.IsGenericType
-                        && iType.GetGenericTypeDefinition() == typeof(IDataEntity<>)
+                      && iType.GetGenericTypeDefinition() == typeof(IDataEntity<>)
                 select iType.GetGenericArguments()[0]).FirstOrDefault();
 
             if (dataEntityType == null)
@@ -132,6 +155,8 @@ namespace OCore.Entities.Data.Http
                     dataEntityType,
                     payloadCompleter,
                     httpMethod);
+                
+                logger.LogInformation(" => '{DataEntityName}': {MethodName}", dataEntityName, httpMethod);
             }
 
 
@@ -167,6 +192,5 @@ namespace OCore.Entities.Data.Http
 
             return routesRegistered;
         }
-
     }
 }

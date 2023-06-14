@@ -1,6 +1,4 @@
-﻿using System.Text;
-using OCore.DiagnosticsServices;
-using OCore.Services;
+﻿using OCore.Services;
 using OCore.Testing.Abstractions;
 using OCore.Testing.Fixtures;
 using OCore.Testing.Host;
@@ -21,13 +19,16 @@ public class GraphTests : FullHost<GraphTestsSeeder>
     {
     }
 
-    [Fact(Skip = "Will fix")]
+    [Fact]
     public async Task ShoutTest()
     {
+        Console.WriteLine(HttpClient.BaseAddress);
         // Why doesn't this work?
         var response = await HttpClient.PostAsJsonAsync("/services/Greeter/SayHelloTo", new object[] { "OCore" });
         
         var body = await response.Content.ReadAsStringAsync();
+
+        //await Task.Delay(1000000);
 
         var correlationIdString = response.Headers.GetValues("CorrelationId").FirstOrDefault();
         var correlationId = Guid.Parse(correlationIdString!);

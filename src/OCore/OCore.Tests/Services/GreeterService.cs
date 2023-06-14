@@ -1,6 +1,6 @@
 ﻿using OCore.Services;
 
-namespace OCore.DiagnosticsServices;
+//namespace OCore.Tests.Services;
 
 [Service("Greeter")]
 public interface IGreeterService : IService

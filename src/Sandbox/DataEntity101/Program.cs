@@ -29,7 +29,6 @@ public class AnimalState
     [Id(2)] public string Noise { get; set; } = string.Empty;
 }
 
-
 [Service("Greeter")]
 public interface IGreeterService : IService
 {

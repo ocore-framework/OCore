@@ -11,3 +11,8 @@ POST {{baseUrl}}/data/animal/Fido
 
 ### Run GET request to retrieve animal
 GET {{baseUrl}}/data/animal/Fido
+
+### Test service
+POST {{baseUrl}}/services/Greeter/ShoutHelloTo
+
+"OCore"
