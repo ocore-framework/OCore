@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Orleans.Serialization.Serializers;
 
 namespace OCore.Entities.Data.Http
 {
@@ -70,13 +71,18 @@ namespace OCore.Entities.Data.Http
 
         private object[] GetCrudBodyEntityParameters(string body)
         {
+            var bodyInstance = JsonSerializer.Deserialize(body, entityType, options: new JsonSerializerOptions()
+            {
+                PropertyNameCaseInsensitive = true,
+            });
+
             if (HttpMethod != HttpMethod.Patch)
             {
-                return new object[] { JsonSerializer.Deserialize(body, entityType) };
+                return new object[] { bodyInstance };
             }
             else
             {
-                return new object[] { JsonSerializer.Deserialize(body, entityType), GetBodyKeys(body) };
+                return new object[] { bodyInstance, GetBodyKeys(body) };
             }
         }
 
