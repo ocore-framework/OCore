@@ -82,7 +82,7 @@ namespace OCore.Http.OpenApi
                 },
                 Servers = new List<OpenApiServer>
                 {
-                    new OpenApiServer { Url = "http://localhost:9000" }
+                    new() { Url = "http://localhost:9000" }
                 },
                 Paths = apiPaths,
                 Components = new OpenApiComponents()
@@ -217,6 +217,17 @@ namespace OCore.Http.OpenApi
                                     Description = dataEntityResource.BaseResource,
                                     Summary = $"{dataEntityInterface.Name}.{DataEntityMethods.Delete}"
                                 });
+                    }
+                    
+                    if (dataEntityResource.Attribute.DataEntityMethods.HasFlag(DataEntityMethods.PartialUpdate))
+                    {
+                        operations.Add(OperationType.Patch,
+                            new OpenApiOperation
+                            {
+                                Tags = new List<OpenApiTag> { new OpenApiTag { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
+                                Description = dataEntityResource.BaseResource,
+                                Summary = $"{dataEntityInterface.Name}.{DataEntityMethods.PartialUpdate}"
+                            });
                     }
 
                     paths.Add($"{dataEntityPrefix}/{dataEntityResource.BaseResource}/{{id}}", new OpenApiPathItem
