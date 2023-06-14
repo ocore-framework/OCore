@@ -1,0 +1,20 @@
+﻿# Variables
+@url = http://localhost:9000
+
+### Run dataentity POST create
+POST {{url}}/data/Test
+Content-Type: application/json
+
+{
+   "Data": "Test"
+}
+
+### Run dataentity GET read
+GET {{url}}/data/Test
+
+### Run dataentity PUT update
+PUT {{url}}/data/Test
+
+{
+   "Data": "Test"
+}
