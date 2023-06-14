@@ -118,6 +118,8 @@ namespace OCore.Entities.Data.Http
                                 case HttpMethod.Put:
                                 case HttpMethod.Patch:
                                     throw new StatusCodeException(HttpStatusCode.NotFound, ex.Message, ex);
+                                case HttpMethod.Post:
+                                    throw new StatusCodeException(HttpStatusCode.Conflict, ex.Message, ex);
                                 default:
                                     throw;
                             }
