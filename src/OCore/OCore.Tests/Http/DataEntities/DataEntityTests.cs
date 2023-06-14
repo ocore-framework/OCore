@@ -33,6 +33,36 @@ public class DataEntityTests : FullHost<ZooSeeder>
     }
 
     [Fact]
+    public async Task TestPostSuccess()
+    {
+        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Bonnie", new AnimalState()
+        {
+            Name = "Bonnie",
+            Age = 3,
+            Noise = "Yipyip!",
+        });
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        
+        var getResponse = await HttpClient.GetAsync("/data/Animal/Bonnie");
+        var body = await getResponse.Content.ReadAsStringAsync();
+        Assert.Contains("Yipyip!", body);
+        Assert.Contains("Bonnie", body);
+    }
+
+    /// <summary>
+    /// Trying to create a data entity with the same ID twice should fail with 409 CONFLICT.
+    /// </summary>
+    [Fact]
+    public async Task TestPostDuplicate()
+    {
+        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Arfwing", new StringContent("{\"Noise\": \"Yipyip!\"}", Encoding.UTF8, "application/json"));
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        
+        postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Arfwing", new StringContent("{\"Noise\": \"Yipyip!\"}", Encoding.UTF8, "application/json"));
+        Assert.Equal(HttpStatusCode.Conflict, postResponse.StatusCode);
+    }
+
+    [Fact]
     public async Task TestPatch()
     {
         var hound = ClusterClient.GetDataEntity<IAnimal>("Hound");
