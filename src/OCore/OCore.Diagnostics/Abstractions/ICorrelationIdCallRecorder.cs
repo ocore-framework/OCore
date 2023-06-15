@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using System.Net.Http;
 using OCore.Core;
 using OCore.Diagnostics.Entities;
 using OCore.Entities.Data;
 using System.Threading.Tasks;
+using OCore.Http.DataTypes;
 
 namespace OCore.Diagnostics.Abstractions
 {
-    [DataEntity("CorrelationIdRecorder", dataEntityMethods: DataEntityMethods.Read)]
+    [DataEntity("OCore.CorrelationIdRecorder", dataEntityMethods: DataEntityMethods.Read)]
     public interface ICorrelationIdCallRecorder : IDataEntity<CorrelationIdCallRecord>
     {
         [Internal]
@@ -18,8 +20,6 @@ namespace OCore.Diagnostics.Abstractions
         [Internal]
         Task Fail(string methodName, string previousMethodName, string exceptionType, string message);
 
-        Task<string> ToMermaid();
-        
-        Task<List<CallEntry>> GetEntries();
+        Task<PlainText> ToMermaid();
     }
 }

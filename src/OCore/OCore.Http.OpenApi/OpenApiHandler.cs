@@ -18,7 +18,6 @@ namespace OCore.Http.OpenApi
 {
     public class OpenApiHandler
     {
-
         string Title { get; set; }
         string Version { get; set; }
         bool LoadDocumentationXml { get; set; }
@@ -43,16 +42,15 @@ namespace OCore.Http.OpenApi
 
         internal async Task Dispatch(HttpContext context)
         {
-
             try
             {
                 OpenApiDocument document = CreateDocument();
-
                 context.Response.ContentType = "application/json";
 
                 var openApiDocumentation = document.Serialize(OpenApiSpecVersion.OpenApi3_0, OpenApiFormat.Json);
 
-                await context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(openApiDocumentation), 0, openApiDocumentation.Length);
+                await context.Response.Body.WriteAsync(Encoding.UTF8.GetBytes(openApiDocumentation), 0,
+                    openApiDocumentation.Length);
                 await context.Response.Body.FlushAsync();
             }
             catch (Exception ex)
@@ -92,7 +90,8 @@ namespace OCore.Http.OpenApi
             };
         }
 
-        private OpenApiPaths CreateApiPaths(List<Resource> resourceList, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
+        private OpenApiPaths CreateApiPaths(List<Resource> resourceList, SchemaGenerator schemaGenerator,
+            SchemaRepository schemaRepository)
         {
             var paths = new OpenApiPaths();
 
@@ -121,7 +120,7 @@ namespace OCore.Http.OpenApi
                         continue;
                     }
 
-                    AddServiceResource(paths, resource, servicePrefix, schemaGenerator, schemaRepository);
+                    AddServiceResource(paths, serviceResource, servicePrefix, schemaGenerator, schemaRepository);
                 }
                 else if (resource is DataEntityResource dataEntityResource)
                 {
@@ -130,38 +129,69 @@ namespace OCore.Http.OpenApi
                         continue;
                     }
 
-                    AddDataEntityResource(paths, dataEntityResource, dataEntityPrefix, schemaGenerator, schemaRepository);
+                    AddDataEntityResource(paths, dataEntityResource, dataEntityPrefix, schemaGenerator,
+                        schemaRepository);
                 }
             }
 
             return paths;
-
         }
 
-        private void AddDataEntityResource(OpenApiPaths paths, DataEntityResource dataEntityResource, string dataEntityPrefix, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
+        private void AddDataEntityResource(OpenApiPaths paths, DataEntityResource dataEntityResource,
+            string dataEntityPrefix, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
         {
-            if (dataEntityResource.BaseResource != dataEntityResource.ResourcePath)
+            if (dataEntityResource.BaseResource != dataEntityResource.ResourceName)
             {
-                paths.Add($"{dataEntityPrefix}/{dataEntityResource.BaseResource}/{{id}}/{dataEntityResource.MethodInfo.Name}", new OpenApiPathItem
-                {
-                    Parameters = new List<OpenApiParameter>() { new OpenApiParameter() { Name = "id", Schema = new OpenApiSchema() { Type = "string" } } },
-                    Operations = new Dictionary<OperationType, OpenApiOperation>
+                var parameterString = CreateParameterString(dataEntityResource);
+                paths.Add(
+                    $"{dataEntityPrefix}/{dataEntityResource.BaseResource}/{{id}}/{dataEntityResource.MethodInfo.Name}",
+                    new OpenApiPathItem
                     {
+                        Parameters = new List<OpenApiParameter>()
                         {
-                            OperationType.Post, new OpenApiOperation
+                            new()
                             {
-                                RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator, schemaRepository),
-                                Tags = new List<OpenApiTag> { new OpenApiTag { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
-                                Description = dataEntityResource.BaseResource,
-                                Summary = $"{dataEntityResource.MethodInfo.DeclaringType.Name}.{dataEntityResource.MethodInfo.Name}",
-                                Responses = new OpenApiResponses
+                                Name = "id",
+                                Schema = new OpenApiSchema() { Type = "string" },
+                                Required = true,
+                                In = ParameterLocation.Path,
+                                Description = "Id of the data entity"
+                            }
+                        },
+                        Operations = new Dictionary<OperationType, OpenApiOperation>
+                        {
+                            {
+                                OperationType.Post, new OpenApiOperation
                                 {
-                                    ["200"] = GetResponseType(dataEntityResource.MethodInfo, schemaGenerator, schemaRepository)
+                                    RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator,
+                                        schemaRepository),
+                                    Tags = new List<OpenApiTag>
+                                    {
+                                        new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                    },
+                                    Description = dataEntityResource.BaseResource,
+                                    Summary =
+                                        $"{dataEntityResource.BaseResource}.{dataEntityResource.MethodInfo.Name}({parameterString})",
+                                    Responses = new OpenApiResponses
+                                    {
+                                        ["200"] = GetResponseType(dataEntityResource.MethodInfo, schemaGenerator,
+                                            schemaRepository)
+                                    },
+                                    Parameters = new List<OpenApiParameter>()
+                                    {
+                                        new()
+                                        {
+                                            Name = "id",
+                                            Schema = new OpenApiSchema() { Type = "string" },
+                                            Required = true,
+                                            In = ParameterLocation.Path,
+                                            Description = "Id of the data entity"
+                                        }
+                                    },
                                 }
                             }
                         }
-                    }
-                });
+                    });
             }
             else
             {
@@ -174,95 +204,191 @@ namespace OCore.Http.OpenApi
                     {
                         var responses = new OpenApiResponses
                         {
-                            ["200"] = GetDataEntityStateResponseType(dataEntityResource.MethodInfo, schemaGenerator, schemaRepository)
+                            ["200"] = GetDataEntityStateResponseType(dataEntityResource.MethodInfo, schemaGenerator,
+                                schemaRepository),
+                            ["404"] = new() { Description = "Not found" },
                         };
                         operations.Add(OperationType.Get,
                             new OpenApiOperation
                             {
                                 Responses = responses,
-                                Tags = new List<OpenApiTag> { new OpenApiTag { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
+                                Tags = new List<OpenApiTag>
+                                {
+                                    new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                },
                                 Description = dataEntityResource.BaseResource,
-                                Summary = $"{dataEntityInterface.Name}.{DataEntityMethods.Read}"
+                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Read}",
+                                Parameters = new List<OpenApiParameter>()
+                                {
+                                    new()
+                                    {
+                                        Name = "id",
+                                        Schema = new OpenApiSchema() { Type = "string" },
+                                        Required = true,
+                                        In = ParameterLocation.Path,
+                                        Description = "Id of the data entity"
+                                    }
+                                },
                             });
                     }
 
                     if (dataEntityResource.Attribute.DataEntityMethods.HasFlag(DataEntityMethods.Create))
                     {
                         operations.Add(OperationType.Post,
-                               new OpenApiOperation
-                               {
-                                   Tags = new List<OpenApiTag> { new OpenApiTag { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
-                                   Description = dataEntityResource.BaseResource,
-                                   Summary = $"{dataEntityInterface.Name}.{DataEntityMethods.Create}"
-                               });
+                            new OpenApiOperation
+                            {
+                                Tags = new List<OpenApiTag>
+                                    { new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
+                                Description = dataEntityResource.BaseResource,
+                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Create}",
+                                RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator,
+                                    schemaRepository),
+                                Responses = new OpenApiResponses
+                                {
+                                    ["200"] = new() { Description = "OK" },
+                                    ["409"] = new() { Description = "Conflict if DataEntity is already created" }
+                                },
+                                Parameters = new List<OpenApiParameter>()
+                                {
+                                    new()
+                                    {
+                                        Name = "id",
+                                        Schema = new OpenApiSchema() { Type = "string" },
+                                        Required = true,
+                                        In = ParameterLocation.Path,
+                                        Description = "Id of the data entity"
+                                    }
+                                },
+                            });
                     }
 
                     if (dataEntityResource.Attribute.DataEntityMethods.HasFlag(DataEntityMethods.Update))
                     {
                         operations.Add(OperationType.Put,
-                                new OpenApiOperation
+                            new OpenApiOperation
+                            {
+                                Tags = new List<OpenApiTag>
                                 {
-                                    Tags = new List<OpenApiTag> { new OpenApiTag { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
-                                    Description = dataEntityResource.BaseResource,
-                                    Summary = $"{dataEntityInterface.Name}.{DataEntityMethods.Update}"
-                                });
+                                    new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                },
+                                Description = dataEntityResource.BaseResource,
+                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Update}",
+                                Parameters = new List<OpenApiParameter>()
+                                {
+                                    new()
+                                    {
+                                        Name = "id",
+                                        Schema = new OpenApiSchema() { Type = "string" },
+                                        Required = true,
+                                        In = ParameterLocation.Path,
+                                        Description = "Id of the data entity"
+                                    }
+                                },
+                            });
                     }
 
                     if (dataEntityResource.Attribute.DataEntityMethods.HasFlag(DataEntityMethods.Delete))
                     {
                         operations.Add(OperationType.Delete,
-                                new OpenApiOperation
+                            new OpenApiOperation
+                            {
+                                Tags = new List<OpenApiTag>
+                                    { new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
+                                Description = dataEntityResource.BaseResource,
+                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Delete}",
+                                Parameters = new List<OpenApiParameter>()
                                 {
-                                    Tags = new List<OpenApiTag> { new OpenApiTag { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
-                                    Description = dataEntityResource.BaseResource,
-                                    Summary = $"{dataEntityInterface.Name}.{DataEntityMethods.Delete}"
-                                });
+                                    new()
+                                    {
+                                        Name = "id",
+                                        Schema = new OpenApiSchema() { Type = "string" },
+                                        Required = true,
+                                        In = ParameterLocation.Path,
+                                        Description = "Id of the data entity"
+                                    }
+                                },
+                            });
                     }
-                    
+
                     if (dataEntityResource.Attribute.DataEntityMethods.HasFlag(DataEntityMethods.PartialUpdate))
                     {
                         operations.Add(OperationType.Patch,
                             new OpenApiOperation
                             {
-                                Tags = new List<OpenApiTag> { new OpenApiTag { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
+                                Tags = new List<OpenApiTag>
+                                {
+                                    new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                },
                                 Description = dataEntityResource.BaseResource,
-                                Summary = $"{dataEntityInterface.Name}.{DataEntityMethods.PartialUpdate}"
+                                RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator,
+                                    schemaRepository),
+                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.PartialUpdate}",
+                                Parameters = new List<OpenApiParameter>()
+                                {
+                                    new()
+                                    {
+                                        Name = "id",
+                                        Schema = new OpenApiSchema() { Type = "string" },
+                                        Required = true,
+                                        In = ParameterLocation.Path,
+                                        Description = "Id of the data entity"
+                                    }
+                                },
                             });
                     }
 
                     paths.Add($"{dataEntityPrefix}/{dataEntityResource.BaseResource}/{{id}}", new OpenApiPathItem
                     {
-                        Parameters = new List<OpenApiParameter>() { new OpenApiParameter() { Name = "id", Schema = new OpenApiSchema() { Type = "string" } } },
+                        Parameters = new List<OpenApiParameter>()
+                            { new() { Name = "id", Schema = new OpenApiSchema() { Type = "string" } } },
                         Operations = operations
                     });
                 }
             }
         }
 
-        private static void AddServiceResource(OpenApiPaths paths, Resource resource, string servicePrefix, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
+        private static void AddServiceResource(OpenApiPaths paths, Resource serviceResource, string servicePrefix,
+            SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
         {
-            paths.Add($"{servicePrefix}/{resource.ResourcePath}", new OpenApiPathItem
+            var parameterString = CreateParameterString(serviceResource);
+
+            paths.Add($"{servicePrefix}/{serviceResource.ResourceName}", new OpenApiPathItem
             {
                 Operations = new Dictionary<OperationType, OpenApiOperation>
+                {
                     {
+                        OperationType.Post, new OpenApiOperation
                         {
-                            OperationType.Post, new OpenApiOperation
+                            Tags = new List<OpenApiTag>
+                                { new() { Name = serviceResource.BaseResource, Description = "Service" } },
+                            Description = serviceResource.BaseResource,
+                            RequestBody = GetRequestType(serviceResource.MethodInfo, schemaGenerator, schemaRepository),
+                            Summary =
+                                $"{serviceResource.BaseResource}.{serviceResource.MethodInfo.Name}({parameterString})",
+                            Responses = new OpenApiResponses
                             {
-                                Tags = new List<OpenApiTag> { new OpenApiTag { Name = resource.BaseResource, Description = "Service" } },
-                                Description = resource.BaseResource,
-                                RequestBody = GetRequestType(resource.MethodInfo, schemaGenerator, schemaRepository),
-                                Summary = $"{resource.MethodInfo.DeclaringType.Name}.{resource.MethodInfo.Name}",
-                                Responses = new OpenApiResponses
-                                {
-                                    ["200"] = GetResponseType(resource.MethodInfo, schemaGenerator, schemaRepository)
-                                }
-                            }
+                                ["200"] = GetResponseType(serviceResource.MethodInfo, schemaGenerator, schemaRepository)
+                            },
                         }
-                    },
+                    }
+                },
             });
         }
 
-        private static OpenApiRequestBody GetRequestType(MethodInfo methodInfo, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
+        private static string CreateParameterString(Resource resource)
+        {
+            ParameterInfo[] parameters = resource.MethodInfo.GetParameters();
+
+            var parametersList = parameters
+                .Select(x => $"{(x.IsOptional ? "[" : "")}{x.ParameterType.Name} {x.Name}{(x.IsOptional ? "]" : "")}")
+                .ToList();
+
+            var parameterString = String.Join(", ", parametersList);
+            return parameterString;
+        }
+
+        private static OpenApiRequestBody GetRequestType(MethodInfo methodInfo, SchemaGenerator schemaGenerator,
+            SchemaRepository schemaRepository)
         {
             var firstParameter = methodInfo.GetParameters().Where(type =>
                 !type.ParameterType.IsPrimitive &&
@@ -270,7 +396,8 @@ namespace OCore.Http.OpenApi
                 !type.ParameterType.Equals(typeof(string))).FirstOrDefault();
             if (firstParameter != null)
             {
-                schemaGenerator.GenerateSchema(firstParameter.ParameterType, schemaRepository, methodInfo, firstParameter);
+                schemaGenerator.GenerateSchema(firstParameter.ParameterType, schemaRepository, methodInfo,
+                    firstParameter);
                 OpenApiSchema schema;
                 schemaRepository.TryLookupByType(firstParameter.ParameterType, out schema);
                 var body = new OpenApiRequestBody();
@@ -303,19 +430,22 @@ namespace OCore.Http.OpenApi
             }
 
             var dataInterface = entityInterface.GetInterfaces().FirstOrDefault(type => type.IsGenericType &&
-                     type.GetGenericTypeDefinition() == typeof(IDataEntity<>) &&
-                    typeof(IDataEntity).IsAssignableFrom(type));
+                type.GetGenericTypeDefinition() == typeof(IDataEntity<>) &&
+                typeof(IDataEntity).IsAssignableFrom(type));
 
             return dataInterface;
         }
 
-        private static OpenApiResponse GetDataEntityStateResponseType(MethodInfo methodInfo, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
+        private static OpenApiResponse GetDataEntityStateResponseType(MethodInfo methodInfo,
+            SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
         {
             var dataEntityInterface = GetDataEntityInterfaceType(methodInfo);
-            return GetOrGenerateResponseType(dataEntityInterface.GenericTypeArguments.FirstOrDefault(), methodInfo, schemaGenerator, schemaRepository);
+            return GetOrGenerateResponseType(dataEntityInterface.GenericTypeArguments.FirstOrDefault(), methodInfo,
+                schemaGenerator, schemaRepository);
         }
 
-        private static OpenApiResponse GetResponseType(MethodInfo methodInfo, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
+        private static OpenApiResponse GetResponseType(MethodInfo methodInfo, SchemaGenerator schemaGenerator,
+            SchemaRepository schemaRepository)
         {
             var returnType = methodInfo.ReturnType.GetGenericArguments().FirstOrDefault();
             if (returnType == null)
@@ -326,7 +456,8 @@ namespace OCore.Http.OpenApi
             return GetOrGenerateResponseType(returnType, methodInfo, schemaGenerator, schemaRepository);
         }
 
-        private static OpenApiResponse GetOrGenerateResponseType(Type type, MethodInfo methodInfo, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
+        private static OpenApiResponse GetOrGenerateResponseType(Type type, MethodInfo methodInfo,
+            SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
         {
             schemaGenerator.GenerateSchema(type, schemaRepository, methodInfo);
             OpenApiSchema schema;

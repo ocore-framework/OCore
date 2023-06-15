@@ -30,7 +30,7 @@ public class GraphTests : FullHost<GraphTestsSeeder>
 
         //await Task.Delay(1000000);
 
-        var correlationIdString = response.Headers.GetValues("CorrelationId").FirstOrDefault();
+        var correlationIdString = response.Headers.GetValues("correlationId").FirstOrDefault();
         var correlationId = Guid.Parse(correlationIdString!);
 
         var graph = ClusterClient.GetService<IGreeterService>();

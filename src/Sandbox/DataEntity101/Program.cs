@@ -4,10 +4,16 @@ using OCore.Services;
 await OCore.Setup.Developer.LetsGo("DataEntities101");
 
 // DataEntities
-
+/// <summary>
+/// A beautiful animal.
+/// </summary>
 [DataEntity("Animal", dataEntityMethods: DataEntityMethods.All)]
 public interface IAnimal : IDataEntity<AnimalState>
 {
+    /// <summary>
+    /// What noise does this animal make?
+    /// </summary>
+    /// <returns></returns>
     Task<string> MakeNoise();
 }
 
@@ -29,13 +35,32 @@ public class AnimalState
     [Id(2)] public string Noise { get; set; } = string.Empty;
 }
 
+[GenerateSerializer]
+public class ShoutRequest
+{
+    [Id(0)] public string Name { get; set; } = string.Empty;
+
+    [Id(1)] public int Times { get; set; } = 3;
+}
+
+/// <summary>
+/// Some general greeter functionality.
+/// </summary>
 [Service("Greeter")]
 public interface IGreeterService : IService
 {
+    /// <summary>
+    /// Just a plain ol' greeting.
+    /// </summary>
+    /// <param name="name">Who we're addressinmg</param>
+    /// <returns></returns>
     Task<string> SayHelloTo(string name);
     Task<string> ShoutHelloTo(string name);
+
+    Task<string> ComplexShout(ShoutRequest request);
 }
 
+/// <inhericdoc />
 public class GreeterService: Service, IGreeterService
 {
     public Task<string> SayHelloTo(string name)
@@ -48,6 +73,17 @@ public class GreeterService: Service, IGreeterService
         var testGrain = GrainFactory.GetGrain<IStringFun>("test");
         var upperName = await testGrain.Capitalize(name);
         return $"Hello, {upperName}!";
+    }
+
+    public Task<string> ComplexShout(ShoutRequest request)
+    {
+        // Shout the name back to the user, n times
+        var names = new List<string>();
+        for (var i = 0; i < request.Times; i++)
+        {
+            names.Add(request.Name);
+        }
+        return Task.FromResult($"Hello, {string.Join(", ", names)}!");
     }
 
     public async Task<string> ShoutHelloBackwards(string name)

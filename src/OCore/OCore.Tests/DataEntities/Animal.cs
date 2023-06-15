@@ -11,6 +11,9 @@ public class AnimalState
     [Id(3)] public string? Noise { get; set; }
 };
 
+/// <summary>
+/// A beautiful animal.
+/// </summary>
 [DataEntity("Animal", dataEntityMethods: DataEntityMethods.All)]
 public interface IAnimal : IDataEntity<AnimalState>
 {

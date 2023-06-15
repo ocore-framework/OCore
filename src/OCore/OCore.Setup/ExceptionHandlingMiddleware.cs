@@ -43,6 +43,9 @@ namespace OCore.Setup
             if (ex is StatusCodeException sce)
             {
                 code = sce.StatusCode;
+            } else if (ex is UnauthorizedAccessException uae)
+            {
+                code = HttpStatusCode.Unauthorized;
             }
 
             var result = JsonConvert.SerializeObject(new { error = ex.ToString() });

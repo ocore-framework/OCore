@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO.Pipelines;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using OCore.Http.DataTypes;
 
 namespace OCore.Http
 {
@@ -87,13 +90,35 @@ namespace OCore.Http
                 object result = GetResult.Invoke(null, new[] { grainCall });
                 if (result != null)
                 {
-                    context.Response.ContentType = "application/json";                    
-
-                    await Serialize(result, context.Response.BodyWriter);
+                    if (result is PlainText plainText)
+                    {
+                        context.Response.ContentType = "text/plain";
+                        await WriteStringToResponse(context, plainText.Text);
+                    }
+                    else
+                    {
+                        context.Response.ContentType = "application/json";
+                        await Serialize(result, context.Response.BodyWriter);
+                    }
                 }
             }
         }
 
+        public async Task WriteStringToResponse(HttpContext context, string content)
+        {
+            // Get the response body writer
+            var responseBodyWriter = context.Response.BodyWriter;
+
+            // Convert the string to bytes using a specific encoding (e.g., UTF-8)
+            var contentBytes = Encoding.UTF8.GetBytes(content);
+
+            // Write the content bytes to the response body writer
+            await responseBodyWriter.WriteAsync(contentBytes);
+
+            // Indicate that writing is complete
+            await responseBodyWriter.CompleteAsync();
+        }
+        
         public async Task Invoke(IGrain[] grains, HttpContext context, string body)
         {
             object[] parameterList = GetParameterList(body);

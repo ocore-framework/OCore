@@ -1,68 +1,66 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System;
+using Microsoft.Extensions.Options;
 using OCore.Diagnostics.Abstractions;
 using OCore.Diagnostics.Options;
 using OCore.Entities.Data;
 using Orleans;
 using Orleans.Runtime;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using OCore.Http.DataTypes;
 
 namespace OCore.Diagnostics.Entities
 {
     [GenerateSerializer]
     public class CallEntry
     {
-        [Id(0)]
-        public string? From { get; init; }
+        [Id(0)] public string? From { get; init; }
 
-        [Id(1)]
-        public string? To { get; init; }
+        [Id(1)] public string? To { get; init; }
 
-        [Id(2)]
-        public string? Parameters { get; init; }
+        [Id(2)] public string? Parameters { get; init; }
 
-        [Id(3)]
-        public string? Result { get; init; }
+        [Id(3)] public string? Result { get; init; }
 
-        [Id(4)]
-        public string? ExceptionMessage { get; init; }
+        [Id(4)] public string? ExceptionMessage { get; init; }
 
-        [Id(5)]
-        public string? ExceptionType { get; init; }
+        [Id(5)] public string? ExceptionType { get; init; }
     }
-    
+
     [GenerateSerializer]
     public class CorrelationIdCallRecord
     {
+        [Id(0)] public List<CallEntry> Entries { get; set; } = new List<CallEntry>();
 
-        [Id(0)]
-        public List<CallEntry> Entries { get; set; } = new List<CallEntry>();
-
-        [Id(1)]
-        public string? RequestSource { get; set; }
+        [Id(1)] public string? RequestSource { get; set; }
     }
 
     public class CorrelationIdCallRecorder : DataEntity<CorrelationIdCallRecord>, ICorrelationIdCallRecorder
     {
-        readonly DiagnosticsOptions diagnosticsOptions;
+        readonly DiagnosticsOptions _diagnosticsOptions;
+
+        readonly ICorrelationIdRegistry? _correlationIdRegistry;
 
         public CorrelationIdCallRecorder(IOptions<DiagnosticsOptions> diagnosticsOptions)
         {
-            this.diagnosticsOptions = diagnosticsOptions.Value;   
+            _diagnosticsOptions = diagnosticsOptions.Value;
+            if (_diagnosticsOptions.StoreInCorrelationIdRegistry == true)
+            {
+                _correlationIdRegistry = Get<ICorrelationIdRegistry>("Registry");
+            }
         }
 
-        public async override Task OnActivateAsync(CancellationToken cancellationToken)
+        public override async Task OnActivateAsync(CancellationToken cancellationToken)
         {
             await base.OnActivateAsync(cancellationToken);
-            if (diagnosticsOptions.StoreCorrelationIdData == false
+            if (_diagnosticsOptions.StoreCorrelationIdData == false
                 && Created == false)
             {
                 Created = true;
-            }            
+            }
         }
 
         public async Task Complete(string? from, string to, string? result)
@@ -74,13 +72,18 @@ namespace OCore.Diagnostics.Entities
                 Result = result
             });
 
-            if (diagnosticsOptions.StoreCorrelationIdData == true)
+            if (_diagnosticsOptions.StoreCorrelationIdData == true)
             {
                 await WriteStateAsync();
             }
+
+            if (_diagnosticsOptions.StoreInCorrelationIdRegistry == true)
+            {
+                await RegisterCorrelationId();
+            }
         }
 
-        public async Task Fail(string methodName, 
+        public async Task Fail(string methodName,
             string previousMethodName,
             string exceptionType, string message)
         {
@@ -92,9 +95,22 @@ namespace OCore.Diagnostics.Entities
                 ExceptionType = exceptionType
             });
 
-            if (diagnosticsOptions.StoreCorrelationIdData == true)
+            if (_diagnosticsOptions.StoreCorrelationIdData == true)
             {
                 await WriteStateAsync();
+            }
+
+            if (_diagnosticsOptions.StoreInCorrelationIdRegistry == true)
+            {
+                await RegisterCorrelationId();
+            }
+        }
+
+        private async Task RegisterCorrelationId()
+        {
+            if (_correlationIdRegistry is not null)
+            {
+                await _correlationIdRegistry.Register(PrimaryKeyString);
             }
         }
 
@@ -112,13 +128,18 @@ namespace OCore.Diagnostics.Entities
                 State.RequestSource = RequestContext.Get("D:RequestSource") as string;
             }
 
-            if (diagnosticsOptions.StoreCorrelationIdData == true)
+            if (_diagnosticsOptions.StoreCorrelationIdData == true)
             {
                 await WriteStateAsync();
             }
+
+            if (_diagnosticsOptions.StoreInCorrelationIdRegistry == true)
+            {
+                await RegisterCorrelationId();
+            }
         }
 
-        public Task<string> ToMermaid()
+        public Task<PlainText> ToMermaid()
         {
             var sb = new StringBuilder();
             var participants = new HashSet<string>();
@@ -174,12 +195,13 @@ namespace OCore.Diagnostics.Entities
 
                 if (entry.ExceptionMessage != null)
                 {
-                    sb.AppendLine($"   {from}-x-{to}: {entry.ExceptionType}: {entry.ExceptionMessage}");      
+                    sb.AppendLine($"   {from}-x-{to}: {entry.ExceptionType}: {entry.ExceptionMessage}");
                 }
             }
-            
+
             byte[] utf8Bytes = Encoding.UTF8.GetBytes(sb.ToString());
-            return Task.FromResult(Encoding.UTF8.GetString(utf8Bytes));
+            var returnString = Encoding.UTF8.GetString(utf8Bytes);
+            return Task.FromResult(new PlainText { Text = returnString });
         }
 
         static string TruncateString(string input, int maxLength)
@@ -192,11 +214,6 @@ namespace OCore.Diagnostics.Entities
             {
                 return input.Substring(0, maxLength) + "...";
             }
-        }
-        
-        public Task<List<CallEntry>> GetEntries()
-        {
-            return Task.FromResult(State.Entries);
         }
     }
 }

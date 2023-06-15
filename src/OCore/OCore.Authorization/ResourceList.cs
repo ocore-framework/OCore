@@ -16,7 +16,7 @@ namespace OCore.Authorization
         /// <summary>
         /// The specialized name of the resource
         /// </summary>
-        public string ResourcePath { get; private set; }
+        public string ResourceName { get; private set; }
 
         /// <summary>
         /// The base resource that holds this specialization
@@ -39,7 +39,7 @@ namespace OCore.Authorization
             MethodInfo methodInfo,
             bool isPublic)
         {
-            ResourcePath = resourceName;
+            ResourceName = resourceName;
             Permissions = permission;
             BaseResource = baseResource;
             MethodInfo = methodInfo;

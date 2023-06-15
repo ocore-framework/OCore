@@ -3,9 +3,7 @@ using Microsoft.Extensions.Options;
 using OCore.Services.Http.Options;
 using Orleans.Runtime;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OCore.Diagnostics.Middleware
@@ -21,20 +19,8 @@ namespace OCore.Diagnostics.Middleware
 
         public async Task Invoke(HttpContext context, IOptions<HttpOptions> options /* other dependencies */)
         {
-
-            //if (RequestContext.Get("D:CorrelationId") is string c
-
-
-            //// I have a feeling this can be improved by not using FirstOrDefault
-            //var correlationId = context.Request.Headers.FirstOrDefault(x => x.Key == correlationIdKeyName).Value.ToString();
-
-            //if (string.IsNullOrEmpty(correlationId) == true)
-            //{
-            //    correlationId = Guid.NewGuid().ToString();
-            //}
-
-            //RequestContext.Set("D:CorrelationId", correlationId);
-
+            // TODO: Should this consider getting the correlationId from the RequestContext?
+            
             string? correlationId = null;
             
             var correlationIdKeyName = options.Value.CorrelationIdHeader ?? "correlationId";
