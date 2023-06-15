@@ -49,28 +49,8 @@ public class CorrelationIdRegistry : DataEntity<CorrelationIdRegistryData>, ICor
         if (pruneCount % 100 != 0
             && stateCorrelationIds.Count > maxCorrelationIds)
         {
-            stateCorrelationIds.RemoveRange(maxCorrelationIds, stateCorrelationIds.Count - maxCorrelationIds);
+            stateCorrelationIds.RemoveRange(stateCorrelationIds.Count - maxCorrelationIds, maxCorrelationIds);
         }
     }
-
-    /// <inheritdoc />
-    public Task<string[]> GetCorrelationIds(int maxCount = 100)
-    {
-        // Return the last maxCount correlation ids with the most recent first.
-        var correlationIds = State.CorrelationIds;
-        var count = correlationIds.Count;
-        var startIndex = count - maxCount;
-        if (startIndex < 0)
-        {
-            startIndex = 0;
-        }
-        
-        var result = new string[count - startIndex];
-        for (var i = startIndex; i < count; i++)
-        {
-            result[i - startIndex] = correlationIds[i];
-        }
-
-        return Task.FromResult(result);
-    }
+    
 }

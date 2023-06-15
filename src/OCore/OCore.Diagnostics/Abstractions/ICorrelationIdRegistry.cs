@@ -19,11 +19,4 @@ public interface ICorrelationIdRegistry : IDataEntity<CorrelationIdRegistryData>
     /// </summary>
     /// <param name="correlationId">The correlation id to store.</param>
     Task Register(string correlationId);
-    
-    /// <summary>
-    /// Get a list of correlation ids that are active.
-    /// </summary>
-    /// <param name="maxCount">The maximum number of returned correlation ids.</param>
-    /// <returns>The correlation ids.</returns>
-    Task<string[]> GetCorrelationIds(int maxCount = 100);
 }

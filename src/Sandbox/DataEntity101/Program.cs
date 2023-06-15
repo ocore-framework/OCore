@@ -70,6 +70,10 @@ public class GreeterService: Service, IGreeterService
 
     public async Task<string> ShoutHelloTo(string name)
     {
+        if (name == "OCore")
+        {
+            throw new ArgumentException("OCore is not a person!", nameof(name));
+        }
         var testGrain = GrainFactory.GetGrain<IStringFun>("test");
         var upperName = await testGrain.Capitalize(name);
         return $"Hello, {upperName}!";

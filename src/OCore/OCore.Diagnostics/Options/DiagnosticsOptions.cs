@@ -18,7 +18,7 @@ namespace OCore.Diagnostics.Options
         /// Whether or not to create a registry of correlation ids. NOTE!
         /// This will become a hot grain in any production system under any load.
         /// </summary>
-        public bool StoreInCorrelationIdRegistry { get; set; } = false;
+        public bool StoreInCorrelationIdRegistry { get; set; } = true;
 
         /// <summary>
         /// How many, approximately, correlation ids to store in the registry.
