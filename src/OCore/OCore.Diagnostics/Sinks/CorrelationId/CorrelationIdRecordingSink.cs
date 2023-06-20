@@ -4,9 +4,7 @@ using OCore.Diagnostics.Filters;
 using OCore.Entities.Data.Extensions;
 using Orleans;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -31,7 +29,9 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
             var result = grainCallContext.Result?.ToString();
 
             // Flip MethodName and PreviousMethodName here as it is working its way down the call stack
-            await recorderGrain.Complete(request.MethodName, request.PreviousMethodName!, result);
+            await recorderGrain.Complete(request.MethodName, 
+                request.PreviousMethodName!, 
+                result, request.HopCount);
         }
 
         public async Task Fail(DiagnosticsPayload request, IGrainCallContext grainCallContext, Exception ex)
@@ -42,7 +42,8 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
                 request.MethodName!, 
                 request.PreviousMethodName!, 
                 ex.GetType().ToString(), 
-                ex.Message);
+                ex.Message,
+                request.HopCount);
         }
 
         public async Task Request(DiagnosticsPayload request, IGrainCallContext grainCallContext)
@@ -66,7 +67,11 @@ namespace OCore.Diagnostics.Sinks.CorrelationId
 
             var parameters = sb.ToString();
 
-            await recorderGrain.Request(request.PreviousMethodName, request.MethodName!, parameters);
+            await recorderGrain.Request(
+                request.PreviousMethodName, 
+                request.MethodName!, 
+                parameters,
+                request.HopCount);
         }
     }
 }

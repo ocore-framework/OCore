@@ -31,11 +31,13 @@ namespace OCore.Setup
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
             app.UseRouting();
             var appTitle = configuration.GetValue<string>("ApplicationTitle");
-            app.UseDefaultOCore(appTitle);
-            app.UseSwaggerUI(c =>
-            {
-                c.SwaggerEndpoint("/api-docs", appTitle);
-            });
+            app.UseDefaultOCore(appTitle,
+                openApiInternalPrefixes: new[]
+                {
+                    "OCore.CorrelationIdRecorder",
+                    "OCore.CorrelationIdRegistry"
+                });
+            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/api-docs", appTitle); });
             //app.UseOCoreDashboard(env);
         }
     }

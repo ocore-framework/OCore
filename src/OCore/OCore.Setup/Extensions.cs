@@ -20,7 +20,9 @@ namespace OCore.DefaultSetup
 
         public static void UseDefaultOCore(this IApplicationBuilder app,
             string appTitle = "OCore App Development",
-            string version = "Development")
+            string version = "Development",
+            bool stripInternal = true,
+            string[] openApiInternalPrefixes = null)
         {
             app.UseEndpoints(endpoints =>
             {
@@ -29,7 +31,8 @@ namespace OCore.DefaultSetup
                 endpoints.MapDeveloperOpenApi("api-docs",
                     appTitle,
                     version,
-                    false);
+                    stripInternal,
+                    openApiInternalPrefixes);
             });            
         }
 

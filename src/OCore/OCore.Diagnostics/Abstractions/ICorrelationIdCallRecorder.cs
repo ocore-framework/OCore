@@ -12,13 +12,13 @@ namespace OCore.Diagnostics.Abstractions
     public interface ICorrelationIdCallRecorder : IDataEntity<CorrelationIdCallRecord>
     {
         [Internal]
-        Task Request(string? from, string to, string parameters);
+        Task Request(string? from, string to, string parameters, int hopCount);
 
         [Internal]
-        Task Complete(string? from, string to, string? result);
+        Task Complete(string? from, string to, string? result, int hopCount);
 
         [Internal]
-        Task Fail(string methodName, string previousMethodName, string exceptionType, string message);
+        Task Fail(string methodName, string previousMethodName, string exceptionType, string message, int hopCount);
 
         Task<PlainText> ToMermaid();
     }

@@ -6,6 +6,7 @@ using OCore.Entities.Data;
 using Orleans;
 using Orleans.Runtime;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
@@ -17,17 +18,19 @@ namespace OCore.Diagnostics.Entities
     [GenerateSerializer]
     public class CallEntry
     {
-        [Id(0)] public string? From { get; init; }
+        [Id(0)] public string? From { get; set; }
 
-        [Id(1)] public string? To { get; init; }
+        [Id(1)] public string? To { get; set; }
 
-        [Id(2)] public string? Parameters { get; init; }
+        [Id(2)] public string? Parameters { get; set; }
 
-        [Id(3)] public string? Result { get; init; }
+        [Id(3)] public string? Result { get; set; }
 
-        [Id(4)] public string? ExceptionMessage { get; init; }
+        [Id(4)] public string? ExceptionMessage { get; set; }
 
-        [Id(5)] public string? ExceptionType { get; init; }
+        [Id(5)] public string? ExceptionType { get; set; }
+        
+        [Id(6)] public int HopCount { get; set; }
     }
 
     [GenerateSerializer]
@@ -63,13 +66,14 @@ namespace OCore.Diagnostics.Entities
             }
         }
 
-        public async Task Complete(string? from, string to, string? result)
+        public async Task Complete(string? from, string to, string? result, int hopCount)
         {
             State.Entries.Add(new CallEntry
             {
                 From = from,
                 To = to,
-                Result = result
+                Result = result,
+                HopCount = hopCount,
             });
 
             if (_diagnosticsOptions.StoreCorrelationIdData == true)
@@ -85,12 +89,14 @@ namespace OCore.Diagnostics.Entities
 
         public async Task Fail(string methodName,
             string previousMethodName,
-            string exceptionType, string message)
+            string exceptionType, string message,
+            int hopCount)
         {
             State.Entries.Add(new CallEntry
             {
                 From = methodName,
                 To = previousMethodName,
+                HopCount = hopCount,
                 ExceptionMessage = message,
                 ExceptionType = exceptionType
             });
@@ -114,13 +120,14 @@ namespace OCore.Diagnostics.Entities
             }
         }
 
-        public async Task Request(string? from, string to, string parameters)
+        public async Task Request(string? from, string to, string parameters, int hopCount)
         {
             State.Entries.Add(new CallEntry
             {
                 To = to,
                 From = from,
-                Parameters = parameters
+                Parameters = parameters,
+                HopCount = hopCount,
             });
 
             if (State.RequestSource == null)
@@ -149,7 +156,9 @@ namespace OCore.Diagnostics.Entities
                 participants.Add(State.RequestSource);
             }
 
-            foreach (var entry in State.Entries)
+            var orderedEntries = State.Entries.OrderBy(x => x.HopCount);
+            
+            foreach (var entry in orderedEntries)
             {
                 if (entry.From != null)
                 {

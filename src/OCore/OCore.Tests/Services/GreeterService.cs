@@ -1,7 +1,5 @@
 ﻿using OCore.Services;
 
-//namespace OCore.Tests.Services;
-
 [Service("Greeter")]
 public interface IGreeterService : IService
 {

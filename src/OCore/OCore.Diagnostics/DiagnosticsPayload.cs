@@ -41,25 +41,24 @@ namespace OCore.Diagnostics.Filters
     /// <summary>
     /// Hello. This is the official documentation: The programming interface for this is confusing at best
     /// </summary>
-    [Serializable]
     [GenerateSerializer]
     public class DiagnosticsPayload
     {
-        public string? CorrelationId { get; set; }
+        [Id(0)] public string? CorrelationId { get; set; }
 
-        public DateTimeOffset CreatedAt { get; set; }
+        [Id(1)] public DateTimeOffset CreatedAt { get; set; }
 
-        public int HopCount { get; set; }
+        [Id(2)] public int HopCount { get; set; }
 
-        public string? PreviousGrainName { get; set; }
+        [Id(3)] public string? PreviousGrainName { get; set; }
 
-        public string? PreviousMethodName { get; set; }
+        [Id(4)] public string? PreviousMethodName { get; set; }
 
-        public string? GrainName { get; set; }
+        [Id(5)] public string? GrainName { get; set; }
 
-        public string? MethodName { get; set; }
+        [Id(6)] public string? MethodName { get; set; }
 
-        public string? RequestSource { get; set; }
+        [Id(7)] public string? RequestSource { get; set; }
 
         public override string ToString()
         {

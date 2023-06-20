@@ -10,6 +10,7 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using Orleans.Runtime;
 
 namespace OCore.Entities.Data.Http
 {
@@ -43,6 +44,12 @@ namespace OCore.Entities.Data.Http
 
         public async Task Dispatch(HttpContext httpContext)
         {
+            var endpoint = (RouteEndpoint)httpContext.GetEndpoint();
+            var pattern = endpoint.RoutePattern;
+
+            RequestContext.Set("D:RequestSource", "HTTP");
+            RequestContext.Set("D:GrainName", pattern.RawText);
+            
             httpContext.RunAuthorizationFilters(invoker);
             httpContext.RunActionFiltersExecuting(invoker);
             await httpContext.RunAsyncActionFilters(invoker, async (context) =>
@@ -67,6 +74,7 @@ namespace OCore.Entities.Data.Http
                     if (grain == null)
                     {
                         await httpContext.SetStatusCode(System.Net.HttpStatusCode.BadRequest, "Unreachable destination");
+                        httpContext.RunActionFiltersExecuted(invoker);
                         return;
                     }
 

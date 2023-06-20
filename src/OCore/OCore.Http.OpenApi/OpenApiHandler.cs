@@ -24,10 +24,13 @@ namespace OCore.Http.OpenApi
         bool StripInternal { get; set; }
         string servicePrefix { get; set; }
         string dataEntityPrefix { get; set; }
+        
+        string[] openApiInternalPrefixes { get; set; }
 
         public OpenApiHandler(string title,
             string version,
             bool stripInternal,
+            string[] openApiInternalPrefixes = null,
             bool loadDocumentationXml = true,
             string servicePrefix = "/services",
             string dataEntityPrefix = "/data")
@@ -38,6 +41,7 @@ namespace OCore.Http.OpenApi
             LoadDocumentationXml = loadDocumentationXml;
             this.servicePrefix = servicePrefix;
             this.dataEntityPrefix = dataEntityPrefix;
+            this.openApiInternalPrefixes = openApiInternalPrefixes;
         }
 
         internal async Task Dispatch(HttpContext context)
@@ -77,6 +81,18 @@ namespace OCore.Http.OpenApi
                 {
                     Version = Version,
                     Title = Title,
+                    Description = @"
+  <pre class=""mermaid"">
+                    graph TD 
+                    A[Client] --> B[Load Balancer] 
+                    B --> C[Server01] 
+                    B --> D[Server02]
+                    </pre>
+  <script type=""module"">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true });
+  </script>
+                    "
                 },
                 Servers = new List<OpenApiServer>
                 {
@@ -109,10 +125,11 @@ namespace OCore.Http.OpenApi
                 }
             }
 
-            foreach (var resource in resourceList)
+            foreach (var resource in resourceList.OrderBy(x => x.BaseResource))
             {
                 if (StripInternal == true
-                    && resource.BaseResource.StartsWith("OCore")) continue;
+                    && resource.BaseResource.StartsWith("OCore")
+                    && openApiInternalPrefixes.Contains(resource.BaseResource) == false) continue;
                 if (resource is ServiceResource serviceResource)
                 {
                     if (serviceResource.MethodInfo.GetCustomAttribute<InternalAttribute>() != null)

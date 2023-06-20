@@ -25,6 +25,17 @@ public class DataEntityTests : FullHost<ZooSeeder>
     }
     
     [Fact]
+    public async Task Test200Fanout()
+    {
+        // Make a GET-request to a seeded endpoint
+        HttpResponseMessage response = await HttpClient.GetAsync("/data/Animal/Dog,Cat");
+        var body = await response.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        Assert.Contains("Rover", body);
+        Assert.Contains("Fluffy", body);
+    }
+    
+    [Fact]
     public async Task Test404()
     {
         // Make a GET-request to a non-existing endpoint
@@ -82,8 +93,23 @@ public class DataEntityTests : FullHost<ZooSeeder>
         Assert.Contains("Yipyip!", body);
         Assert.Contains("Bonnie", body);
     }
-
- 
-
-
+    
+    [Fact]
+    public async Task TestPostSuccessDeserializeJson()
+    {
+        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Bonnie", new AnimalState()
+        {
+            Name = "Bonnie",
+            Age = 3,
+            Noise = "Yipyip!",
+        });
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        
+        var animalState = await HttpClient.GetFromJsonAsync<AnimalState>("/data/Animal/Bonnie");
+        
+        Assert.NotNull(animalState);
+        Assert.Equal("Bonnie", animalState.Name);
+        Assert.Equal(3, animalState.Age);
+        Assert.Equal("Yipyip!", animalState.Noise);
+    }
 }

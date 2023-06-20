@@ -24,6 +24,7 @@ public static class Developer
         bool block = true,
         Action<IHostBuilder> hostConfigurationDelegate = null,
         Action<ISiloBuilder> siloConfigurationDelegate = null,
+        string[] openApiInternalPrefixes = null,
         Action<HostBuilderContext, IServiceCollection> serviceConfigurationDelegate = null)
     {
         if (logLevel.HasValue)
