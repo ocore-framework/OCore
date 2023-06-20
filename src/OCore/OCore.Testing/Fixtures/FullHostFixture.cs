@@ -3,14 +3,14 @@ using Microsoft.Extensions.Hosting;
 
 namespace OCore.Testing.Fixtures;
 
-public class FullHostFixture 
+public class FullHostFixture : IAsyncLifetime
 {
     public int Port { get; set; }
 
     public IHost? Host { get; protected set; }
 
     public IClusterClient? ClusterClient { get; protected set; }
-    
+
     public async Task InitializeAsync()
     {
         int counter = 0;
