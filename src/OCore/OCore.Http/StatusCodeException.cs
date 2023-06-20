@@ -14,6 +14,12 @@ namespace OCore.Http
         {
             StatusCode = statusCode;
         }
+
+        public StatusCodeException(HttpStatusCode statusCode,
+            string message) : base(message)
+        {
+            StatusCode = statusCode;
+        }
         
         public StatusCodeException(HttpStatusCode statusCode, 
             string message, 
