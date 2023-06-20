@@ -25,4 +25,8 @@
       <ProjectReference Include="..\OCore.Testing\OCore.Testing.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Events\" />
+    </ItemGroup>
+
 </Project>
