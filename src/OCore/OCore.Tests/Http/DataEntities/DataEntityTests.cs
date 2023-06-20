@@ -80,7 +80,7 @@ public class DataEntityTests : FullHost<ZooSeeder>
     [Fact]
     public async Task TestPostSuccess()
     {
-        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Bonnie", new AnimalState()
+        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Bonnie", new AnimalState
         {
             Name = "Bonnie",
             Age = 3,
@@ -97,19 +97,37 @@ public class DataEntityTests : FullHost<ZooSeeder>
     [Fact]
     public async Task TestPostSuccessDeserializeJson()
     {
-        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Bonnie", new AnimalState()
+        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Wabwab", new AnimalState()
         {
-            Name = "Bonnie",
+            Name = "Wabwab",
             Age = 3,
             Noise = "Yipyip!",
         });
         Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
         
-        var animalState = await HttpClient.GetFromJsonAsync<AnimalState>("/data/Animal/Bonnie");
+        var animalState = await HttpClient.GetFromJsonAsync<AnimalState>("/data/Animal/Wabwab");
         
         Assert.NotNull(animalState);
-        Assert.Equal("Bonnie", animalState.Name);
+        Assert.Equal("Wabwab", animalState.Name);
         Assert.Equal(3, animalState.Age);
         Assert.Equal("Yipyip!", animalState.Noise);
+    }
+
+    [Fact]
+    public async Task TestCommand()
+    {
+        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Largo", new AnimalState()
+        {
+            Name = "Bonnie",
+            Age = 3,
+            Noise = "Yipyip!",
+        });
+        
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        
+        postResponse = await HttpClient.PostAsync("/data/Animal/Largo/MakeNoise", null);
+        var body = await postResponse.Content.ReadAsStringAsync();
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        Assert.Equal("\"Yipyip!\"", body);
     }
 }

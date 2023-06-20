@@ -1,7 +1,7 @@
-@baseUrl = http://localhost:9000
+@baseUrl = http://localhost:15420
 
 ### Run POST request to create a new animal
-POST {{baseUrl}}/data/animal/Fido
+POST {{baseUrl}}/data/Animal/Fido
 
 {
     "Name": "Fido the dog",
@@ -9,10 +9,44 @@ POST {{baseUrl}}/data/animal/Fido
     "Noise": "Woof"
 }
 
+### Run POST request to create a new animal
+POST {{baseUrl}}/data/Animal/Mia
+
+{
+    "Name": "Mia the cat",
+    "Age": 2,
+    "Noise": "Meow"
+}
+
+### Run POST request to create a new animal
+POST {{baseUrl}}/data/Home/Fido
+
+{
+    "Description": "Fido's home"    
+}
+
 ### Run GET request to retrieve animal
-GET {{baseUrl}}/data/animal/Fido
+GET {{baseUrl}}/data/animal/Fido,Mia
+
+### Run GET request to retrieve animal
+GET {{baseUrl}}/data/Animal,Home/Fido
+
+
+### Make noise
+POST {{baseUrl}}/data/Animal/Fido/MakeNoise
 
 ### Test service
 POST {{baseUrl}}/services/Greeter/ShoutHelloTo
 
 "OCore"
+
+
+### GET to retrieve Fido
+GET {{baseUrl}}/data/Animal,Home/Fido
+
+###
+POST http://localhost:15420/services/Greeter/SayHelloTo
+Accept: application/json
+Content-Type: application/json
+
+["OCore"]

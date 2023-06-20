@@ -1,4 +1,5 @@
-﻿using OCore.Entities.Data;
+﻿using OCore.Core;
+using OCore.Entities.Data;
 using OCore.Services;
 
 await OCore.Setup.Developer.LetsGo("DataEntities101");
@@ -23,6 +24,23 @@ public class Animal : DataEntity<AnimalState>, IAnimal
     {
         return Task.FromResult($"{State.Name} ({State.Age}) says {State.Noise}!");
     }
+}
+
+[GenerateSerializer]
+public class HomeState
+{
+    [Id(0)] public string Description { get; set; } = String.Empty;
+}
+
+[DataEntity("Home", dataEntityMethods: DataEntityMethods.All)]
+public interface IHome : IDataEntity<HomeState>
+{
+    
+}
+
+public class Home : DataEntity<HomeState>, IHome
+{
+    
 }
 
 [GenerateSerializer]

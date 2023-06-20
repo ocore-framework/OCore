@@ -7,7 +7,7 @@ public interface IGreeterService : IService
     Task<string> ShoutHelloTo(string name);
 }
 
-public class GreeterService: Service, IGreeterService
+public class GreeterService : Service, IGreeterService
 {
     public Task<string> SayHelloTo(string name)
     {

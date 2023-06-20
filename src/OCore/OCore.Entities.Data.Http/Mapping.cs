@@ -7,8 +7,10 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Logging;
+using Orleans;
 
 namespace OCore.Entities.Data.Http
 {
@@ -26,8 +28,12 @@ namespace OCore.Entities.Data.Http
                 routesCreated += MapDataEntityToRoute(routes, serviceType, prefix, payloadCompleter);
             }
 
+            // Map fanout routes
+            routesCreated += MapDataEntityFanOutGet(routes, dataEntitiesToMap, prefix, payloadCompleter);
+
             return routes;
         }
+
 
         private static IEnumerable<Type> GetAllTypesThatImplementInterface<T>()
         {
@@ -39,12 +45,29 @@ namespace OCore.Entities.Data.Http
                                && type.GetInterfaces().Contains(typeof(T)));
         }
 
-        private static List<Type> DiscoverDataEntitiesToMap()
+        private static IEnumerable<Type> DiscoverDataEntitiesToMap()
         {
-            var iDataEntityImplementors = GetAllTypesThatImplementInterface<IDataEntity>().ToList();
+            var iDataEntityImplementors = GetAllTypesThatImplementInterface<IDataEntity>();
             var thatHaveDataEntityAttribute = iDataEntityImplementors.Where(t => t.GetCustomAttributes(true)
-                .Where(attr => attr.GetType() == typeof(DataEntityAttribute)).SingleOrDefault() != null).ToList();
-            return thatHaveDataEntityAttribute;
+                .Where(attr => attr.GetType() == typeof(DataEntityAttribute)).SingleOrDefault() != null);
+            var thatDontHaveInternalAttribute = thatHaveDataEntityAttribute.Where(t => t.GetCustomAttributes(true)
+                .Where(attr => attr.GetType() == typeof(InternalAttribute)).SingleOrDefault() == null);
+            return thatDontHaveInternalAttribute;
+        }
+
+        // Map GET-requests for all data entities in the same route
+        private static int MapDataEntityFanOutGet(IEndpointRouteBuilder routeBuilder,
+            IEnumerable<Type> dataEntitiesToMap, string prefix, IPayloadCompleter payloadCompleter)
+        {
+            var clusterClient = routeBuilder.ServiceProvider.GetRequiredService<IClusterClient>();
+
+            var routePattern = RoutePatternFactory.Parse($"{prefix}/{{dataEntityNames}}/{{identity}}");
+            var dispatcher = new DataEntityFanOutDispatcher(dataEntitiesToMap,
+                    clusterClient,
+                    routeBuilder.ServiceProvider,
+                    payloadCompleter);
+            routeBuilder.MapGet(routePattern.RawText, dispatcher.Dispatch);
+            return 0;
         }
 
         private static int MapDataEntityToRoute(IEndpointRouteBuilder routes, Type grainType, string prefix,
@@ -74,7 +97,7 @@ namespace OCore.Entities.Data.Http
             var logger = loggerFactory.CreateLogger("OCore.Entities.Data.Http.Mapping");
 
             logger.LogInformation("Mapping routes for DataEntity '{DataEntityName}'", dataEntityName);
-            
+
             routesRegistered += MapCustomMethods(dataEntityName, keyStrategy, maxFanoutLimit, routes, payloadCompleter,
                 prefix, methods, routesRegistered);
             routesRegistered += MapCrudMethods(dataEntityName, grainType, keyStrategy, maxFanoutLimit,
@@ -155,7 +178,7 @@ namespace OCore.Entities.Data.Http
                     dataEntityType,
                     payloadCompleter,
                     httpMethod);
-                
+
                 logger.LogInformation(" => '{DataEntityName}': {MethodName}", dataEntityName, httpMethod);
             }
 
