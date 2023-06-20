@@ -125,7 +125,9 @@ namespace OCore.Http.OpenApi
                 }
             }
 
-            foreach (var resource in resourceList.OrderBy(x => x.BaseResource))
+            var orderedResourceList = OrderResourceList(resourceList);
+            
+            foreach (var resource in orderedResourceList)
             {
                 if (StripInternal == true
                     && resource.BaseResource.StartsWith("OCore")
@@ -152,6 +154,16 @@ namespace OCore.Http.OpenApi
             }
 
             return paths;
+        }
+
+        // Split into OCore-related resources and "other" and push out OCore-stuff at the end
+        private IEnumerable<Resource> OrderResourceList(List<Resource> resourceList)
+        {
+            var orderedResourceList = resourceList.OrderBy(x => x.BaseResource);
+            var ocoreResources = orderedResourceList.Where(x => x.BaseResource.StartsWith("OCore")).ToList();
+            var otherResources = orderedResourceList.Where(x => x.BaseResource.StartsWith("OCore") == false).ToList();
+            
+            return otherResources.Concat(ocoreResources);
         }
 
         private void AddDataEntityResource(OpenApiPaths paths, DataEntityResource dataEntityResource,
