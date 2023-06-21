@@ -290,6 +290,8 @@ namespace OCore.Http.OpenApi
                                 },
                                 Description = dataEntityResource.BaseResource,
                                 Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Update}",
+                                RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator,
+                                    schemaRepository),
                                 Parameters = new List<OpenApiParameter>()
                                 {
                                     new()
