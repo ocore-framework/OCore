@@ -109,7 +109,7 @@ namespace OCore.Entities.Data
             }
         }
 
-        public Task Commit()
+        public virtual Task Commit()
         {
             return WriteStateAsync();
         }
