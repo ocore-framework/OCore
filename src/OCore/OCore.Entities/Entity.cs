@@ -107,7 +107,7 @@ namespace OCore.Entities
             return Task.FromResult(0);
         }
 
-        protected virtual Task Delete()
+        public virtual Task Delete()
         {
             return entityLogic.Delete();
         }

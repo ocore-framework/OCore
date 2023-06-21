@@ -44,6 +44,31 @@ public class DataEntityTests : FullHost<ZooSeeder>
     }
 
     [Fact]
+    public async Task TestDelete()
+    {
+        var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Tiger", new AnimalState()
+        {
+            Name = "Tiger",
+            Age = 3,
+            Noise = "ROAR!",
+        });
+        Assert.Equal(HttpStatusCode.OK, postResponse.StatusCode);
+        
+        var animalState = await HttpClient.GetFromJsonAsync<AnimalState>("/data/Animal/Tiger");
+        
+        Assert.NotNull(animalState);
+        Assert.Equal("Tiger", animalState.Name);
+        Assert.Equal(3, animalState.Age);
+        Assert.Equal("ROAR!", animalState.Noise);
+
+        var deleteResponse = await HttpClient.DeleteAsync("/data/Animal/Tiger");
+        Assert.Equal(HttpStatusCode.OK, deleteResponse.StatusCode);
+        
+        var getResponse = await HttpClient.GetAsync("/data/Animal/Tiger");
+        Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+    }
+
+    [Fact]
     public async Task TestPatch()
     {
         var hound = ClusterClient.GetDataEntity<IAnimal>("Hound");

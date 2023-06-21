@@ -57,7 +57,7 @@ namespace OCore.Entities.Data
         {
             if (Created == true)
             {
-                State = (T)data;
+                State = data;
                 return WriteStateAsync();
             }
             else
@@ -93,15 +93,15 @@ namespace OCore.Entities.Data
 
         public virtual Task Upsert(T data)
         {
-            State = (T)data;
+            State = data;
             return WriteStateAsync();
         }
 
-        Task IDataEntity<T>.Delete()
+        public override Task Delete()
         {
             if (Created == true)
             {
-                return Delete();
+                return base.Delete();
             }
             else
             {

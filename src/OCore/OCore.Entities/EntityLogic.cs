@@ -3,7 +3,6 @@ using Newtonsoft.Json;
 using Orleans;
 using Orleans.Runtime;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace OCore.Entities
@@ -70,8 +69,6 @@ namespace OCore.Entities
 
         public Task Delete()
         {
-            List<Task> tasks = new List<Task>();
-
             state.Created = false;
             state.CreatedAt = DateTimeOffset.MinValue;
             state.UpdatedAt = DateTimeOffset.MinValue;
