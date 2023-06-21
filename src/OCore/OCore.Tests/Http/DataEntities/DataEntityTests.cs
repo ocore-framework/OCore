@@ -118,7 +118,7 @@ public class DataEntityTests : FullHost<ZooSeeder>
     {
         var postResponse = await HttpClient.PostAsJsonAsync("/data/Animal/Largo", new AnimalState()
         {
-            Name = "Bonnie",
+            Name = "Largo",
             Age = 3,
             Noise = "Yipyip!",
         });
