@@ -1,8 +1,22 @@
 ﻿using OCore.Core;
 using OCore.Entities.Data;
+using OCore.Http.Hateoas;
 using OCore.Services;
 
 await OCore.Setup.Developer.LetsGo("DataEntities101");
+
+[GenerateSerializer]
+public class AnimalState
+{
+    [Id(0)] public string Name { get; set; } = string.Empty;
+    
+    [Id(1)] public int Age { get; set; }
+
+    [Id(2)] public string Noise { get; set; } = string.Empty;
+    
+    [Id(3)] public List<HateoasLink> Links { get; set; } = new List<HateoasLink>(); 
+}
+
 
 // DataEntities
 /// <summary>
@@ -24,6 +38,12 @@ public class Animal : DataEntity<AnimalState>, IAnimal
     {
         return Task.FromResult($"{State.Name} ({State.Age}) says {State.Noise}!");
     }
+
+    public override Task<AnimalState> Read()
+    {
+        State.Links = this.GetHateoasLinks().ToList();
+        return base.Read();
+    }
 }
 
 [GenerateSerializer]
@@ -43,15 +63,6 @@ public class Home : DataEntity<HomeState>, IHome
     
 }
 
-[GenerateSerializer]
-public class AnimalState
-{
-    [Id(0)] public string Name { get; set; } = string.Empty;
-    
-    [Id(1)] public int Age { get; set; }
-
-    [Id(2)] public string Noise { get; set; } = string.Empty;
-}
 
 [GenerateSerializer]
 public class ShoutRequest

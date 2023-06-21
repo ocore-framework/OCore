@@ -1,4 +1,4 @@
-@baseUrl = http://localhost:15420
+@baseUrl = http://localhost:9000
 
 ### Run POST request to create a new animal
 POST {{baseUrl}}/data/Animal/Fido
@@ -24,6 +24,9 @@ POST {{baseUrl}}/data/Home/Fido
 {
     "Description": "Fido's home"    
 }
+
+### Run GET request to retrieve animal
+GET {{baseUrl}}/data/animal/Fido
 
 ### Run GET request to retrieve animal
 GET {{baseUrl}}/data/animal/Fido,Mia

@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 //using OCore.Dashboard;
 using OCore.DefaultSetup;
 using OCore.Diagnostics.Middleware;
+using OCore.Http.Hateoas;
 
 namespace OCore.Setup
 {
@@ -29,6 +30,7 @@ namespace OCore.Setup
             app.UseDeveloperExceptionPage();
             app.UseMiddleware(typeof(CorrelationIdProviderMiddleware));
             app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+            app.UseHateoas(app.ApplicationServices);
             app.UseRouting();
             var appTitle = configuration.GetValue<string>("ApplicationTitle");
             app.UseDefaultOCore(appTitle,

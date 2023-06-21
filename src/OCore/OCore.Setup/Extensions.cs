@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using OCore.Diagnostics;
 using OCore.Diagnostics.Middleware;
 using OCore.Entities.Data.Http;
+using OCore.Http.Hateoas;
 using OCore.Http.OpenApi;
 using OCore.Services;
 using OCore.Services.Http;
@@ -15,7 +16,8 @@ namespace OCore.DefaultSetup
         {
             return serviceCollection
                 .AddServiceRouter()
-                .AddDiagnosticIncomingGrainCallFilter();                ;
+                .AddDiagnosticIncomingGrainCallFilter()
+                .AddHateoas();
         }
 
         public static void UseDefaultOCore(this IApplicationBuilder app,
