@@ -31,7 +31,6 @@ public class HelloWorldService : Service, IHelloWorldService
         return Task.FromResult($"Hello, {name}! It is a beautiful world! And you are my favorite part of it!");
     }
 }
-
 ```
 
 Press F5 and POST (using Postman/VS Code REST client):
@@ -310,7 +309,7 @@ POST http://localhost:9000/data/ShortenedUrl/SomeId/Visit
 
 This will call the `Visit`-method updating the counter, and return the `RedirectTo`-string.
 
-## Multi fetch
+### Multi fetch
 
 Using `GET`, you can do multifetch using HTTP:
 
@@ -337,9 +336,54 @@ This indicates that the system was able to fetch data for Id1 and Id5, but not f
 
 This works regardless of key strategy, meaning that if a data entity is account prefixed, fetching `id1`, `id2` will translate to `accountId:id1` and `accountId:id2`, maintaining the integrity of the sandbox.
 
-Support for more methods of fan-out is coming.
+### Multifetch on type (not yet implemented)
 
-### Key strategies
+**Not yet implemented!**
+
+We want to be able to, using `GET` to do multifetch on datatypes:
+
+```http
+### Multi fetch separate datatypes
+GET http://localhost:9000/data/SomeDataEntity,SomeOtherEntity/Id1
+```
+
+This will return:
+
+```json
+{
+    "SomeDataEntity": {
+        "Field1": "Value1"
+    },
+    "SomeOtherEntity": {
+        "Field1": "Value1"
+    }
+}
+```
+
+These entities will share the same ID. This is useful for splitting up compound data entities into multiple smaller entities. Proposed additional syntax:
+
+```http
+### Multi fetch separate datatypes
+GET http://localhost:9000/data/User:Profile:Matches/Id1
+```
+
+...is the same as...
+
+```http
+### Multi fetch separate datatypes
+GET http://localhost:9000/data/User,UserProfile,UserMatches/Id1
+```
+
+Basically taking the first entity-name in the colon-separated list and prepend it to the next entities.
+
+```http
+### Multi fetch separate datatypes
+GET http://localhost:9000/data/User:Profile:Matches,Photos/Id1
+```
+
+Multifetch on data entity types will honor the individual key strategies for the involved data entities.
+
+## Key strategies
 
 `DataEntity` implements different key strategies. Deciding on the key strategy will optionally make Data Entities interplay with the authorization system.
  The Data Entity key strategies are:
