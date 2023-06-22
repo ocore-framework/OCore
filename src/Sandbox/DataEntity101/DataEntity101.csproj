@@ -11,6 +11,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\OCore\OCore.Diagnostics.C4\OCore.Diagnostics.C4.csproj" />
       <ProjectReference Include="..\..\OCore\OCore.Setup\OCore.Setup.csproj" />
     </ItemGroup>
 

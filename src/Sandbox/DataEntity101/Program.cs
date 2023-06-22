@@ -2,6 +2,8 @@
 using OCore.Entities.Data;
 using OCore.Services;
 
+var diagram = OCore.Diagnostics.C4.C4.GenerateC4Model("DataEntity101");
+
 await OCore.Setup.Developer.LetsGo("DataEntities101");
 
 // DataEntities

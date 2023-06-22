@@ -29,7 +29,7 @@ namespace OCore.Authorization.Abstractions
         /// <summary>
         /// API keys are linked to tenants, so the tenant is implicit
         /// </summary>
-        ApiKey, // An API key is always only valid for a tenant,
+        ApiKey, // An API key is always only valid for a tenant only
 
         /// <summary>
         /// <i>Either</i> supply an API-key <i>or</i> a Token + Tenant

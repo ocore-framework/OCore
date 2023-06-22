@@ -2,7 +2,6 @@
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Extensions;
 using Microsoft.OpenApi.Models;
-using OCore.Authorization;
 using OCore.Core;
 using OCore.Entities.Data;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -13,6 +12,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using OCore.Resources;
+using OCore.Resources.ResourceTypes;
 
 namespace OCore.Http.OpenApi
 {
@@ -103,13 +104,13 @@ namespace OCore.Http.OpenApi
 
             foreach (var resourceEntry in resourceList)
             {
-                if (baseResources.TryGetValue(resourceEntry.BaseResource, out var resourceDescriptions))
+                if (baseResources.TryGetValue(resourceEntry.ResourceType, out var resourceDescriptions))
                 {
                     resourceDescriptions.Add(resourceEntry);
                 }
                 else
                 {
-                    baseResources.Add(resourceEntry.BaseResource, new List<Resource> { resourceEntry });
+                    baseResources.Add(resourceEntry.ResourceType, new List<Resource> { resourceEntry });
                 }
             }
 
@@ -118,8 +119,8 @@ namespace OCore.Http.OpenApi
             foreach (var resource in orderedResourceList)
             {
                 if (StripInternal == true
-                    && resource.BaseResource.StartsWith("OCore")
-                    && openApiInternalPrefixes.Contains(resource.BaseResource) == false) continue;
+                    && resource.ResourceType.StartsWith("OCore")
+                    && openApiInternalPrefixes.Contains(resource.ResourceType) == false) continue;
                 if (resource is ServiceResource serviceResource)
                 {
                     if (serviceResource.MethodInfo.GetCustomAttribute<InternalAttribute>() != null)
@@ -147,9 +148,9 @@ namespace OCore.Http.OpenApi
         // Split into OCore-related resources and "other" and push out OCore-stuff at the end
         private IEnumerable<Resource> OrderResourceList(List<Resource> resourceList)
         {
-            var orderedResourceList = resourceList.OrderBy(x => x.BaseResource);
-            var ocoreResources = orderedResourceList.Where(x => x.BaseResource.StartsWith("OCore")).ToList();
-            var otherResources = orderedResourceList.Where(x => x.BaseResource.StartsWith("OCore") == false).ToList();
+            var orderedResourceList = resourceList.OrderBy(x => x.ResourceType);
+            var ocoreResources = orderedResourceList.Where(x => x.ResourceType.StartsWith("OCore")).ToList();
+            var otherResources = orderedResourceList.Where(x => x.ResourceType.StartsWith("OCore") == false).ToList();
             
             return otherResources.Concat(ocoreResources);
         }
@@ -157,11 +158,11 @@ namespace OCore.Http.OpenApi
         private void AddDataEntityResource(OpenApiPaths paths, DataEntityResource dataEntityResource,
             string dataEntityPrefix, SchemaGenerator schemaGenerator, SchemaRepository schemaRepository)
         {
-            if (dataEntityResource.BaseResource != dataEntityResource.ResourceName)
+            if (dataEntityResource.ResourceType != dataEntityResource.ResourceName)
             {
                 var parameterString = CreateParameterString(dataEntityResource);
                 paths.Add(
-                    $"{dataEntityPrefix}/{dataEntityResource.BaseResource}/{{id}}/{dataEntityResource.MethodInfo.Name}",
+                    $"{dataEntityPrefix}/{dataEntityResource.ResourceType}/{{id}}/{dataEntityResource.MethodInfo.Name}",
                     new OpenApiPathItem
                     {
                         Parameters = new List<OpenApiParameter>()
@@ -184,11 +185,11 @@ namespace OCore.Http.OpenApi
                                         schemaRepository),
                                     Tags = new List<OpenApiTag>
                                     {
-                                        new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                        new() { Name = dataEntityResource.ResourceType, Description = "DataEntity" }
                                     },
-                                    Description = dataEntityResource.BaseResource,
+                                    Description = dataEntityResource.ResourceType,
                                     Summary =
-                                        $"{dataEntityResource.BaseResource}.{dataEntityResource.MethodInfo.Name}({parameterString})",
+                                        $"{dataEntityResource.ResourceType}.{dataEntityResource.MethodInfo.Name}({parameterString})",
                                     Responses = new OpenApiResponses
                                     {
                                         ["200"] = GetResponseType(dataEntityResource.MethodInfo, schemaGenerator,
@@ -212,7 +213,7 @@ namespace OCore.Http.OpenApi
             }
             else
             {
-                if (paths.ContainsKey(dataEntityResource.BaseResource) == false)
+                if (paths.ContainsKey(dataEntityResource.ResourceType) == false)
                 {
                     var operations = new Dictionary<OperationType, OpenApiOperation>();
                     var dataEntityInterface = dataEntityResource.MethodInfo.DeclaringType.GenericTypeArguments[0];
@@ -231,10 +232,10 @@ namespace OCore.Http.OpenApi
                                 Responses = responses,
                                 Tags = new List<OpenApiTag>
                                 {
-                                    new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                    new() { Name = dataEntityResource.ResourceType, Description = "DataEntity" }
                                 },
-                                Description = dataEntityResource.BaseResource,
-                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Read}",
+                                Description = dataEntityResource.ResourceType,
+                                Summary = $"{dataEntityResource.ResourceType}.{DataEntityMethods.Read}",
                                 Parameters = new List<OpenApiParameter>()
                                 {
                                     new()
@@ -255,9 +256,9 @@ namespace OCore.Http.OpenApi
                             new OpenApiOperation
                             {
                                 Tags = new List<OpenApiTag>
-                                    { new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
-                                Description = dataEntityResource.BaseResource,
-                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Create}",
+                                    { new() { Name = dataEntityResource.ResourceType, Description = "DataEntity" } },
+                                Description = dataEntityResource.ResourceType,
+                                Summary = $"{dataEntityResource.ResourceType}.{DataEntityMethods.Create}",
                                 RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator,
                                     schemaRepository),
                                 Responses = new OpenApiResponses
@@ -286,10 +287,10 @@ namespace OCore.Http.OpenApi
                             {
                                 Tags = new List<OpenApiTag>
                                 {
-                                    new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                    new() { Name = dataEntityResource.ResourceType, Description = "DataEntity" }
                                 },
-                                Description = dataEntityResource.BaseResource,
-                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Update}",
+                                Description = dataEntityResource.ResourceType,
+                                Summary = $"{dataEntityResource.ResourceType}.{DataEntityMethods.Update}",
                                 RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator,
                                     schemaRepository),
                                 Parameters = new List<OpenApiParameter>()
@@ -312,9 +313,9 @@ namespace OCore.Http.OpenApi
                             new OpenApiOperation
                             {
                                 Tags = new List<OpenApiTag>
-                                    { new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" } },
-                                Description = dataEntityResource.BaseResource,
-                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.Delete}",
+                                    { new() { Name = dataEntityResource.ResourceType, Description = "DataEntity" } },
+                                Description = dataEntityResource.ResourceType,
+                                Summary = $"{dataEntityResource.ResourceType}.{DataEntityMethods.Delete}",
                                 Parameters = new List<OpenApiParameter>()
                                 {
                                     new()
@@ -336,12 +337,12 @@ namespace OCore.Http.OpenApi
                             {
                                 Tags = new List<OpenApiTag>
                                 {
-                                    new() { Name = dataEntityResource.BaseResource, Description = "DataEntity" }
+                                    new() { Name = dataEntityResource.ResourceType, Description = "DataEntity" }
                                 },
-                                Description = dataEntityResource.BaseResource,
+                                Description = dataEntityResource.ResourceType,
                                 RequestBody = GetRequestType(dataEntityResource.MethodInfo, schemaGenerator,
                                     schemaRepository),
-                                Summary = $"{dataEntityResource.BaseResource}.{DataEntityMethods.PartialUpdate}",
+                                Summary = $"{dataEntityResource.ResourceType}.{DataEntityMethods.PartialUpdate}",
                                 Parameters = new List<OpenApiParameter>()
                                 {
                                     new()
@@ -356,7 +357,7 @@ namespace OCore.Http.OpenApi
                             });
                     }
 
-                    paths.Add($"{dataEntityPrefix}/{dataEntityResource.BaseResource}/{{id}}", new OpenApiPathItem
+                    paths.Add($"{dataEntityPrefix}/{dataEntityResource.ResourceType}/{{id}}", new OpenApiPathItem
                     {
                         Parameters = new List<OpenApiParameter>()
                             { new() { Name = "id", Schema = new OpenApiSchema() { Type = "string" } } },
@@ -379,11 +380,11 @@ namespace OCore.Http.OpenApi
                         OperationType.Post, new OpenApiOperation
                         {
                             Tags = new List<OpenApiTag>
-                                { new() { Name = serviceResource.BaseResource, Description = "Service" } },
-                            Description = serviceResource.BaseResource,
+                                { new() { Name = serviceResource.ResourceType, Description = "Service" } },
+                            Description = serviceResource.ResourceType,
                             RequestBody = GetRequestType(serviceResource.MethodInfo, schemaGenerator, schemaRepository),
                             Summary =
-                                $"{serviceResource.BaseResource}.{serviceResource.MethodInfo.Name}({parameterString})",
+                                $"{serviceResource.ResourceType}.{serviceResource.MethodInfo.Name}({parameterString})",
                             Responses = new OpenApiResponses
                             {
                                 ["200"] = GetResponseType(serviceResource.MethodInfo, schemaGenerator, schemaRepository)

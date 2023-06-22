@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Http.Hateoas", "OCore
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Diagnostics.C4", "OCore.Diagnostics.C4\OCore.Diagnostics.C4.csproj", "{210DE9D2-349C-47AE-98DA-3560C53394B2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Resources", "OCore.Resources\OCore.Resources.csproj", "{983CE710-B300-4102-BFBA-BEA27DA0D522}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -151,6 +153,10 @@ Global
 		{210DE9D2-349C-47AE-98DA-3560C53394B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{210DE9D2-349C-47AE-98DA-3560C53394B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{210DE9D2-349C-47AE-98DA-3560C53394B2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{983CE710-B300-4102-BFBA-BEA27DA0D522}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{983CE710-B300-4102-BFBA-BEA27DA0D522}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{983CE710-B300-4102-BFBA-BEA27DA0D522}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{983CE710-B300-4102-BFBA-BEA27DA0D522}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
