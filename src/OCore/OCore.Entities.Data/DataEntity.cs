@@ -67,7 +67,7 @@ namespace OCore.Entities.Data
         }
 
         /// <inheritdoc />
-        public async Task PartialUpdate(T data, string[] fields)
+        public virtual async Task PartialUpdate(T data, string[] fields)
         {
             if (Created is true && State is not null)
             {
