@@ -1,4 +1,5 @@
-﻿using OCore.Entities.Data.Extensions;
+﻿using System.Security.Principal;
+using OCore.Entities.Data.Extensions;
 using Orleans;
 using System.Threading.Tasks;
 
@@ -6,7 +7,11 @@ using System.Threading.Tasks;
 
 namespace OCore.Entities.Data
 {
-    public abstract class DataEntity<T> : Entity<T>, IDataEntity<T> where T : new()
+    public abstract class DataEntity<T> : 
+        Entity<T>, 
+        IIdentifyable,
+        IDataEntity<T> where T : new()
+    
     {
         /// <summary>
         /// The ID for this DataEntity

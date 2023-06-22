@@ -63,7 +63,7 @@ namespace OCore.Entities.Data
     }
 
 
-    [AttributeUsage(AttributeTargets.Interface)]
+    [AttributeUsage(AttributeTargets.Interface, Inherited = true)]
     public class DataEntityAttribute : Attribute
     {
         public string Name { get; private set; }

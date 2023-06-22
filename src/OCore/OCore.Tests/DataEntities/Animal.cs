@@ -1,4 +1,6 @@
 ﻿using OCore.Entities.Data;
+using OCore.Http.Hateoas;
+using OCore.Http.Hateoas.Attributes;
 
 namespace OCore.Tests.DataEntities;
 
@@ -9,6 +11,8 @@ public class AnimalState
     [Id(1)] public int Age { get; set; }
     [Id(2)] public int CallCount { get; set; }
     [Id(3)] public string? Noise { get; set; }
+    
+    [Id(4)] public List<HateoasLink> Links { get; set; } = new(); 
 };
 
 /// <summary>
@@ -22,8 +26,17 @@ public interface IAnimal : IDataEntity<AnimalState>
 
 public class Animal : DataEntity<AnimalState>, IAnimal
 {
+    [HateoasGuard("DELETE")]
+    public bool CanDelete => false;
+    
     public Task<string?> MakeNoise()
     {
         return Task.FromResult(State.Noise);
+    }
+
+    public override Task<AnimalState> Read()
+    {
+        State.Links = this.GetHateoasLinks().ToList();
+        return base.Read();
     }
 }

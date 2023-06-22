@@ -5,6 +5,14 @@ using System.Threading.Tasks;
 
 namespace OCore.Entities.Data
 {
+    public interface IIdentifyable
+    {
+        /// <summary>
+        /// The ID for this DataEntity
+        /// </summary>
+        string Id { get; }
+    }
+
     public interface IDataEntity : IGrainWithStringKey
     {
     }
