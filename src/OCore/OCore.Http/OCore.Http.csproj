@@ -7,6 +7,7 @@
 		<IsPackable>true</IsPackable>
 		<PackageId>OCore.Http</PackageId>		
 		<Authors>COCPORN</Authors>
+		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
 	<ItemGroup>		

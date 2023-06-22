@@ -10,14 +10,15 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
+using IActionFilter = OCore.Http.Filters.IActionFilter;
+using IAsyncActionFilter = OCore.Http.Filters.IAsyncActionFilter;
 
 namespace OCore.Http
 {
     public static class Extensions
     {
 
-        static ConcurrentDictionary<MethodInfo, Func<HttpContext, Task>> asyncFilters
-            = new ConcurrentDictionary<MethodInfo, Func<HttpContext, Task>>();
+        static readonly ConcurrentDictionary<MethodInfo, Func<HttpContext, Task>> asyncFilters = new();
 
         public static async Task RunAsyncActionFilters(this HttpContext context,
             GrainInvoker invoker,
@@ -31,15 +32,15 @@ namespace OCore.Http
             else
             {
 
-                var filters = invoker.MethodInfo.GetCustomAttributes(true)
-                    .Where(x => x is Filters.IAsyncActionFilter)
-                    .Select(x => x as Filters.IAsyncActionFilter)
+                var filters = invoker.MethodInfo
+                    .GetCustomAttributes(true)
+                    .OfType<IAsyncActionFilter>()
                     .OrderBy(x => x.Order)
                     .ToArray();
 
                 Func<HttpContext, Task> Wrap(Filters.IAsyncActionFilter filter, Func<HttpContext, Task> n)
                 {
-                    return new Func<HttpContext, Task>((context) => filter.OnActionExecutionAsync(context, n));
+                    return (context) => filter.OnActionExecutionAsync(context, n);
                 }
 
                 Func<HttpContext, Task> BuildCallChain(int i, Filters.IAsyncActionFilter filter, Func<HttpContext, Task> n)
@@ -67,8 +68,8 @@ namespace OCore.Http
             }
         }
 
-        static ConcurrentDictionary<MethodInfo, IEnumerable<IAuthorizationFilter>> authorizationFilters = new ConcurrentDictionary<MethodInfo, IEnumerable<IAuthorizationFilter>>();
-        static ConcurrentDictionary<MethodInfo, IEnumerable<Filters.IActionFilter>> actionFilters = new ConcurrentDictionary<MethodInfo, IEnumerable<Filters.IActionFilter>>();
+        static ConcurrentDictionary<MethodInfo, IEnumerable<IAuthorizationFilter>> authorizationFilters = new();
+        static ConcurrentDictionary<MethodInfo, IEnumerable<Filters.IActionFilter>> actionFilters = new();
 
         public static void RunActionFiltersExecuting(this HttpContext context, GrainInvoker invoker)
         {
@@ -78,9 +79,9 @@ namespace OCore.Http
             }
             else
             {
-                var filters = invoker.MethodInfo.GetCustomAttributes(true)
-                    .Where(x => x is Filters.IActionFilter)
-                    .Select(x => x as Filters.IActionFilter)
+                var filters = invoker.MethodInfo
+                    .GetCustomAttributes(true)
+                    .OfType<IActionFilter>()
                     .OrderBy(x => x.Order);
                 actionFilters.AddOrUpdate(invoker.MethodInfo, filters, (key, oldvalue) => filters);
                 RunActionFiltersExecuting(context, filters);
@@ -112,9 +113,9 @@ namespace OCore.Http
             else
             {
 
-                var filters = invoker.MethodInfo.GetCustomAttributes(true)
-                    .Where(x => x is Filters.IActionFilter)
-                    .Select(x => x as Filters.IActionFilter)
+                var filters = invoker.MethodInfo
+                    .GetCustomAttributes(true)
+                    .OfType<IActionFilter>()
                     .OrderBy(x => x.Order);
                 actionFilters.AddOrUpdate(invoker.MethodInfo, filters, (key, oldvalue) => filters);
                 RunActionFiltersExecuted(context, filters);
@@ -135,8 +136,7 @@ namespace OCore.Http
                 var attributes = invoker.MethodInfo.GetCustomAttributes(true)
                     .Concat(invoker.GrainType.GetCustomAttributes(true));
                 filters = attributes
-                    .Where(x => x is IAuthorizationFilter)
-                    .Select(x => x as IAuthorizationFilter);
+                    .OfType<IAuthorizationFilter>();
                 authorizationFilters.AddOrUpdate(invoker.MethodInfo, filters, (key, oldvalue) => filters);
                 RunAuthorizationFilters(authorizationFilterContext, filters);
             }
