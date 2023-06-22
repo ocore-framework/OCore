@@ -9,6 +9,11 @@ namespace OCore.Entities.Data
     public abstract class DataEntity<T> : Entity<T>, IDataEntity<T> where T : new()
     {
         /// <summary>
+        /// The ID for this DataEntity
+        /// </summary>
+        public string Id => this.GetPrimaryKeyString();
+        
+        /// <summary>
         /// Check to see if the data entity exists
         /// </summary>
         /// <returns>true if exists, false if it doesn't</returns>
@@ -30,6 +35,12 @@ namespace OCore.Entities.Data
             }
         }
 
+        /// <summary>
+        /// Get a separate DataEntity.
+        /// </summary>
+        /// <param name="identity">The identity of the DataEntity. If the parameter is omitted, the new DataEntity will share the same identity as the current DataEntity.</param>
+        /// <typeparam name="T1">Type of the DataEntity.</typeparam>
+        /// <returns>A reference to the DataEntity.</returns>
         protected T1 Get<T1>(string? identity = null) where T1 : IDataEntity
         {
             if (identity == null)
@@ -47,7 +58,6 @@ namespace OCore.Entities.Data
             }
             else
             {
-                //throw new Exception($"DataEntity not created: {this.GetPrimaryKeyString()}/{typeof(T)}");
                 throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
         }
