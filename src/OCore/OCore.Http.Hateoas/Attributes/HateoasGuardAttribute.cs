@@ -3,32 +3,36 @@
 /// <summary>
 /// Rub this attribute on a bool property that indicates whether a link should be added to the response 
 /// </summary>
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Method, AllowMultiple = true)]
 public class HateoasGuardAttribute : Attribute
 {
-    public string Rel { get; }
-    public string HttpMethod { get; }
+    public HttpMethod HttpMethod { get; }
     public string? HrefTemplate { get; }
 
+    public string? Command { get; set; }
+    
     /// <summary>
     /// Self links 
     /// </summary>
     /// <param name="httpMethod"></param>
-    public HateoasGuardAttribute(string httpMethod)
+    public HateoasGuardAttribute(HttpMethod httpMethod)
     {
         HttpMethod = httpMethod;
-        Rel = "self";
+    }
+
+    public HateoasGuardAttribute(string command)
+    {
+        Command = command;
     }
     
     /// <summary>
     /// More complex links, supporting templating
     /// </summary>
     /// <param name="httpMethod"></param>
-    /// <param name="rel"></param>
     /// <param name="hrefTemplate">The HREF template. Certain keys will be interpolated.</param>
-    public HateoasGuardAttribute(string httpMethod, string rel, string hrefTemplate)
+    public HateoasGuardAttribute(HttpMethod httpMethod, string hrefTemplate)
     {
         HttpMethod = httpMethod;
-        Rel = rel;
         HrefTemplate = hrefTemplate; 
     }
 }

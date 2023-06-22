@@ -80,17 +80,47 @@ public static class Extensions
         }
 
         // Get all bool-properties on entity that have the HateoasGuardAttribute and evaluate to false
-        var properties = typeof(T).GetProperties()
+        var propertyAttributes = typeof(T).GetProperties()
             .Where(p => p.PropertyType == typeof(bool))
-            .Select(p => new { Property = p, Attribute = p.GetCustomAttribute<HateoasGuardAttribute>() })
+            .Select(p => new { Property = p, Attributes = p.GetCustomAttributes<HateoasGuardAttribute>() })
             .Where(p => (bool)p.Property.GetValue(entity)! == false);
 
         // If any properties were found with the HateoasGuardAttribute, remove the corresponding links
-        foreach (var property in properties)
+        foreach (var property in propertyAttributes)
         {
-            links.RemoveAll(l => l.Method == property.Attribute!.HttpMethod);
+            foreach (var attribute in property.Attributes)
+            {
+                links.RemoveAll(l =>
+                    l.Rel == "self"
+                    && l.Method == attribute.HttpMethod.ToString().ToUpper());
+            }
         }
+        
+        var commands = propertyAttributes.SelectMany(p => p.Attributes)
+            .Where(a => a.Command is not null)
+            .Select(a => a.Command)
+            .Distinct();
+        
+        // Add commands from interfaceType
+        if (interfaceType is not null)
+        {
+            var methods = interfaceType.GetMethods();
+               
 
+            foreach (var method in methods)
+            {
+                var methodName = method.Name;
+                if (commands.Any(x => x == methodName)) continue;
+                
+                links.Add(new HateoasLink()
+                {
+                    Rel = "self",
+                    Href = FormatTemplate("{scheme}://{host}{path}/" + method.Name, entity.Id, httpRequest),
+                    Method = HttpMethod.Post.ToString().ToUpper()
+                });
+            }
+        }
+        
         return links;
     }
 

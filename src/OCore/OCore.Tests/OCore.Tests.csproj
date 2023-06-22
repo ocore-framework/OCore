@@ -22,7 +22,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OCore.Http.Hateoas\OCore.Http.Hateoas.csproj" />
       <ProjectReference Include="..\OCore.Testing\OCore.Testing.csproj" />
     </ItemGroup>
 

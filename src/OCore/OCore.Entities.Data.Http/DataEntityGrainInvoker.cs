@@ -11,15 +11,7 @@ using Orleans.Serialization.Serializers;
 
 namespace OCore.Entities.Data.Http
 {
-    public enum HttpMethod
-    {
-        NotSet,
-        Get,
-        Post,
-        Put,
-        Delete,
-        Patch,
-    }
+
 
     public class DataEntityGrainInvoker : GrainInvoker
     {

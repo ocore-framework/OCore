@@ -10,6 +10,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Logging;
+using OCore.Http;
 using Orleans;
 
 namespace OCore.Entities.Data.Http

@@ -14,8 +14,8 @@ public class ServiceTests : FullHost
     [Fact]
     public async Task Test200()
     {
-        //var response = await HttpClient.PostAsJsonAsync("/services/SayHelloTo", new StringContent("[\"OCore\"]", Encoding.UTF8, "application/json"));
-        var response = await HttpClient.PostAsJsonAsync("services/Greeter/SayHelloTo", "\"OCore\"");
+        var response = await HttpClient.PostAsync("services/Greeter/SayHelloTo", new StringContent("[\"OCore\"]", Encoding.UTF8, "application/json"));
+        //var response = await HttpClient.PostAsJsonAsync("services/Greeter/SayHelloTo", "\"OCore\"");
 
         //await Task.Delay(-1);
 

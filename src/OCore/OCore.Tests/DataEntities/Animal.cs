@@ -28,6 +28,9 @@ public class Animal : DataEntity<AnimalState>, IAnimal
 {
     [HateoasGuard("DELETE")]
     public bool CanDelete => false;
+
+    [HateoasGuard(nameof(IAnimal.MakeNoise))]
+    public bool CanMakeNoise => false;
     
     public Task<string?> MakeNoise()
     {

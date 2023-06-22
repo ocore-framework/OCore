@@ -25,6 +25,7 @@
 		<ProjectReference Include="..\OCore.Entities.Data.Http\OCore.Entities.Data.Http.csproj" />
 		<ProjectReference Include="..\OCore.Events\OCore.Events.csproj" />
 		<ProjectReference Include="..\OCore.Http.OpenApi\OCore.Http.OpenApi.csproj" />
+		<ProjectReference Include="..\OCore.Http.Hateoas\OCore.Http.Hateoas.csproj" />
 		<ProjectReference Include="..\OCore.Services.Http\OCore.Services.Http.csproj" />
 		<ProjectReference Include="..\OCore.Services\OCore.Services.csproj" />
 	</ItemGroup>
