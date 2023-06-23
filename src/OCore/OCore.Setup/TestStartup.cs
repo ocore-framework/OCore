@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 //using OCore.Dashboard;
 using OCore.DefaultSetup;
 using OCore.Diagnostics.Middleware;
+using OCore.Http.Middleware;
 
 namespace OCore.Setup
 {
@@ -27,8 +28,9 @@ namespace OCore.Setup
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseDeveloperExceptionPage();
-            app.UseMiddleware(typeof(CorrelationIdProviderMiddleware));
-            app.UseMiddleware(typeof(ErrorHandlingMiddleware));
+            app.UseMiddleware<HttpContextMiddleware>();
+            app.UseMiddleware<CorrelationIdProviderMiddleware>();
+            app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseRouting();
             var appTitle = configuration.GetValue<string>("ApplicationTitle");
             app.UseDefaultOCore(appTitle);
