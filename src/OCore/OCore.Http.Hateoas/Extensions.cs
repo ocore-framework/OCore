@@ -7,8 +7,13 @@ namespace OCore.Http.Hateoas;
 
 public static class Extensions
 {
-    public static IEnumerable<HateoasLink> GetHateoasLinks<T>(this T entity)
-        where T : IIdentifyable
+    public static IEnumerable<HateoasLink>  GetHateoasLinks<T>(this T entity)
+        where T: IIdentifyable
+    {
+        return GetHateoasLinks(typeof(T), entity.Id, entity);
+    }
+
+    public static IEnumerable<HateoasLink> GetHateoasLinks(Type type, string id, object entity)
     {
         var httpRequest = RequestContext.Get("HttpContextRequest") as HttpContextRequest;
 
@@ -21,7 +26,7 @@ public static class Extensions
         List<HateoasLink> links = new();
 
         // Get the IDataEntity<T>-derived interface from the data entity
-        Type? interfaceType = typeof(T).GetInterfaces()
+        Type? interfaceType = type.GetInterfaces()
             .FirstOrDefault(i => i.GetCustomAttributes(typeof(DataEntityAttribute), true).Any());
 
         if (interfaceType is not null)
@@ -36,7 +41,7 @@ public static class Extensions
                     links.Add(new HateoasLink()
                     {
                         Rel = "self",
-                        Href = FormatTemplate("{scheme}://{host}{path}", entity.Id, httpRequest),
+                        Href = FormatTemplate("{scheme}://{host}{path}", id, httpRequest),
                         Method = "POST"
                     });
                 }
@@ -45,7 +50,7 @@ public static class Extensions
                     links.Add(new HateoasLink()
                     {
                         Rel = "self",
-                        Href = FormatTemplate("{scheme}://{host}{path}", entity.Id, httpRequest),
+                        Href = FormatTemplate("{scheme}://{host}{path}", id, httpRequest),
                         Method = "DELETE"
                     });
                 }
@@ -54,7 +59,7 @@ public static class Extensions
                     links.Add(new HateoasLink()
                     {
                         Rel = "self",
-                        Href = FormatTemplate("{scheme}://{host}{path}", entity.Id, httpRequest),
+                        Href = FormatTemplate("{scheme}://{host}{path}", id, httpRequest),
                         Method = "PUT"
                     });
                 }
@@ -63,7 +68,7 @@ public static class Extensions
                     links.Add(new HateoasLink()
                     {
                         Rel = "self",
-                        Href = FormatTemplate("{scheme}://{host}{path}", entity.Id, httpRequest),
+                        Href = FormatTemplate("{scheme}://{host}{path}", id, httpRequest),
                         Method = "PATCH"
                     });
                 }
@@ -72,7 +77,7 @@ public static class Extensions
                     links.Add(new HateoasLink()
                     {
                         Rel = "self",
-                        Href = FormatTemplate("{scheme}://{host}{path}", entity.Id, httpRequest),
+                        Href = FormatTemplate("{scheme}://{host}{path}", id, httpRequest),
                         Method = "GET"
                     });
                 }
@@ -80,7 +85,7 @@ public static class Extensions
         }
 
         // Get all bool-properties on entity that have the HateoasGuardAttribute and evaluate to false
-        var propertyAttributes = typeof(T).GetProperties()
+        var propertyAttributes = type.GetProperties()
             .Where(p => p.PropertyType == typeof(bool))
             .Select(p => new { Property = p, Attributes = p.GetCustomAttributes<HateoasGuardAttribute>() })
             .Where(p => (bool)p.Property.GetValue(entity)! == false);
@@ -115,7 +120,7 @@ public static class Extensions
                 links.Add(new HateoasLink()
                 {
                     Rel = "self",
-                    Href = FormatTemplate("{scheme}://{host}{path}/" + method.Name, entity.Id, httpRequest),
+                    Href = FormatTemplate("{scheme}://{host}{path}/" + method.Name, id, httpRequest),
                     Method = HttpMethod.Post.ToString().ToUpper()
                 });
             }
