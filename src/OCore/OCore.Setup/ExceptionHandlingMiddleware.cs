@@ -36,9 +36,13 @@ namespace OCore.Setup
         {
             var code = HttpStatusCode.InternalServerError; // 500 if unexpected
 
+            // Why is this even done here?
             if (RequestContext.Get("D:CorrelationId") is string correlationId)
             {
-                context.Response.Headers.Add("CorrelationId", correlationId);
+                if (context.Response.Headers.ContainsKey("CorrelationId") == false)
+                {
+                    context.Response.Headers.Add("CorrelationId", correlationId);
+                }
             }
 
             if (ex is StatusCodeException sce)

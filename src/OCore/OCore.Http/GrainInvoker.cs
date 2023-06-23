@@ -27,7 +27,9 @@ namespace OCore.Http
         public MethodInfo MethodInfo { get; set; }
         protected MethodInfo GetResult { get; set; }
 
-        private static readonly MethodInfo getResultMethod = typeof(GrainInvoker).GetMethod(nameof(GetResultDelegate), BindingFlags.Static | BindingFlags.NonPublic);
+        private static readonly MethodInfo getResultMethod =
+            typeof(GrainInvoker).GetMethod(nameof(GetResultDelegate), BindingFlags.Static | BindingFlags.NonPublic);
+
         private static object GetResultDelegate<T>(Task<T> input) => input.GetAwaiter().GetResult();
 
         IServiceProvider serviceProvider;
@@ -80,7 +82,8 @@ namespace OCore.Http
 
             await grainCall;
 
-            if (RequestContext.Get("D:CorrelationId") is string correlationId)
+            if (context.Response.Headers.ContainsKey("CorrelationId") == false
+                && RequestContext.Get("D:CorrelationId") is string correlationId)
             {
                 context.Response.Headers.Add("CorrelationId", correlationId);
             }
@@ -118,7 +121,7 @@ namespace OCore.Http
             // Indicate that writing is complete
             await responseBodyWriter.CompleteAsync();
         }
-        
+
         public async Task Invoke(IGrain[] grains, HttpContext context, string body)
         {
             object[] parameterList = GetParameterList(body);
@@ -133,8 +136,9 @@ namespace OCore.Http
                 await Task.WhenAll(grainCalls);
             }
             // This is supposed to be catch-all, the exceptions are checked below
-            catch 
-            { }
+            catch
+            {
+            }
 
             List<object> results = new List<object>();
 
@@ -154,13 +158,14 @@ namespace OCore.Http
                 }
                 else if (task.IsFaulted)
                 {
-                    results.Add(null);                   
+                    results.Add(null);
                 }
             }
 
             context.Response.ContentType = "application/json";
 
-            if (RequestContext.Get("D:CorrelationId") is string correlationId)
+            if (context.Response.Headers.ContainsKey("CorrelationId") == false
+                && RequestContext.Get("D:CorrelationId") is string correlationId)
             {
                 context.Response.Headers.Add("CorrelationId", correlationId);
             }
@@ -200,6 +205,5 @@ namespace OCore.Http
                 return JsonSerializer.Deserialize(serialized, parameter.Type);
             }
         }
-
     }
 }

@@ -175,12 +175,13 @@ namespace OCore.Entities.Data.Http
 
                 context.Response.ContentType = "application/json";
                 context.Response.StatusCode = 200;
-                
-                context.Response.ContentType = "application/json";
 
                 if (RequestContext.Get("D:CorrelationId") is string correlationId)
                 {
-                    context.Response.Headers.Add("CorrelationId", correlationId);
+                    if (context.Response.Headers.ContainsKey("CorrelationId") == false)
+                    {
+                        context.Response.Headers.Add("CorrelationId", correlationId);
+                    }
                 }
 
                 await Serialize(output, context.Response.BodyWriter);
