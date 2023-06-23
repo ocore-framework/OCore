@@ -10,11 +10,13 @@ public static class Extensions
     public static IEnumerable<HateoasLink>  GetHateoasLinks<T>(this T entity)
         where T: IIdentifyable
     {
-        return GetHateoasLinks(typeof(T), entity.Id, entity);
+        return GetHateoasLinks(entity);
     }
-
-    public static IEnumerable<HateoasLink> GetHateoasLinks(Type type, string id, object entity)
+    
+    public static IEnumerable<HateoasLink> GetHateoasLinks(this IIdentifyable entity)
     {
+        string id = entity.Id;
+        Type type = entity.GetType();   
         var httpRequest = RequestContext.Get("HttpContextRequest") as HttpContextRequest;
 
         // This should be runnable and testable without a HttpContextRequest
