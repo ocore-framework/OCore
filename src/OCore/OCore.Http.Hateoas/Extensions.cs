@@ -12,10 +12,10 @@ public static class Extensions
     {
         var httpRequest = RequestContext.Get("HttpContextRequest") as HttpContextRequest;
 
+        // This should be runnable and testable without a HttpContextRequest
         if (httpRequest is null)
         {
-            throw new InvalidOperationException(
-                "Unable to get HttpContextRequest from RequestContext, make sure you have the HttpContextMiddleware registered in your ASP.NET Core pipeline.");
+            return Enumerable.Empty<HateoasLink>();
         }
 
         List<HateoasLink> links = new();
