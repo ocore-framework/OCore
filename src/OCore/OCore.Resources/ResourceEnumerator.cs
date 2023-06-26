@@ -27,12 +27,31 @@ public static class ResourceEnumerator
         }
     }
 
+    /// <summary>
+    /// Return public resources
+    /// </summary>
     public static List<Resource> PublicResources =>
         FindServiceResources(false)
             .Concat(FindDataEntityResources(false))
             .ToList();
 
-    static List<Resource> FindDataEntityResources(bool includePrivate = true)
+
+    /// <summary>
+    /// Return public reasources, but omit OCore specific resources
+    /// </summary>
+    /// <returns></returns>
+    public static List<Resource> PublicResourcesWithoutOCore =>
+        FindServiceResources(false)
+            .Concat(FindDataEntityResources(false))
+            .Where(r => r.ResourceName.StartsWith("OCore") == false)
+            .ToList();
+
+    /// <summary>
+    /// Return all resources that are Data Entities
+    /// </summary>
+    /// <param name="includePrivate"></param>
+    /// <returns></returns>
+    public static List<Resource> FindDataEntityResources(bool includePrivate = true)
     {
         var interfaces = AppDomain
             .CurrentDomain
@@ -58,9 +77,13 @@ public static class ResourceEnumerator
 
         return dataResourcesFromMethod.Concat(dataResourcesFromCrud).ToList();
     }
-
-
-    static List<Resource> FindServiceResources(bool includePrivate = true)
+    
+    /// <summary>
+    /// Return all resources that are Services 
+    /// </summary>
+    /// <param name="includePrivate"></param>
+    /// <returns></returns>
+    public static List<Resource> FindServiceResources(bool includePrivate = true)
     {
         return AppDomain
             .CurrentDomain

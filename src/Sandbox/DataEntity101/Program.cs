@@ -1,8 +1,10 @@
-﻿using OCore.Core;
+﻿using System.Reflection;
+using OCore.Core;
+using OCore.Diagnostics.C4;
 using OCore.Entities.Data;
 using OCore.Services;
 
-var diagram = OCore.Diagnostics.C4.C4.GenerateC4Model("DataEntity101");
+var diagram = Assembly.GetExecutingAssembly().GenerateC4Model("DataEntity101");
 
 await OCore.Setup.Developer.LetsGo("DataEntities101");
 
