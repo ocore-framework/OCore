@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Text.RegularExpressions;
 using OCore.Resources;
 
 namespace OCore.Diagnostics.C4;
@@ -6,12 +7,15 @@ namespace OCore.Diagnostics.C4;
 // This will come soon
 public static class C4
 {
-    // If you want to implement both "*" and "?"
-    private static String WildcardToRegex(String value) {
-        return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$"; 
+    private static String WildcardToRegex(String value)
+    {
+        return "^" + Regex.Escape(value).Replace("\\?", ".").Replace("\\*", ".*") + "$";
     }
-    
-    public static string GenerateC4Model(string systemName, 
+
+    public static string GenerateC4Model(
+        this Assembly assembly,
+        string containerName,
+        int systemNamespaceDepth = 2,
         string resourceInclusionWildcard = "*",
         string? regex = null)
     {
@@ -20,11 +24,10 @@ public static class C4
             regex = WildcardToRegex(resourceInclusionWildcard);
         }
 
-        var resources = ResourceEnumerator.PublicResources
+        var resources = ResourceEnumerator.PublicResourcesWithoutOCore
             .Where(r => Regex.IsMatch(r.ResourceType, regex));
 
         ;
         return "";
     }
-    
 }
