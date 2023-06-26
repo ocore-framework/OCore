@@ -3,6 +3,7 @@ using Orleans;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OCore.Authorization.Request;
 
 namespace OCore.Authorization
 {
@@ -30,7 +31,7 @@ namespace OCore.Authorization
     /// Api keys are keyed on guid
     /// </summary>
     /// 
-    [Authorize(Abstractions.Permissions.All, Abstractions.Requirements.TokenAndTenant)]
+    [Authorize(Permissions.All, Requirements.TokenAndTenant)]
     public interface IApiKey : IDataEntity<ApiKeyState>
     {
         Task Activate();

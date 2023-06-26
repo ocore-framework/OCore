@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using OCore.Authorization.Abstractions;
 using OCore.Core;
 using System;
 using System.CodeDom.Compiler;
@@ -10,6 +9,7 @@ using System.Reflection;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Logging;
+using OCore.Authorization.Request.Abstractions;
 using OCore.Http;
 using Orleans;
 

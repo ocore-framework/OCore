@@ -3,7 +3,7 @@ using Orleans.Runtime;
 using System;
 using System.Collections.Generic;
 
-namespace OCore.Authorization.Abstractions.Request
+namespace OCore.Authorization.Request
 {
     [Serializable]
     [GenerateSerializer]

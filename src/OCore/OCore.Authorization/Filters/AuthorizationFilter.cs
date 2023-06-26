@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using OCore.Authorization.Abstractions;
-using OCore.Authorization.Abstractions.Request;
 using Orleans;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using OCore.Authorization.Request;
+using OCore.Authorization.Request.Abstractions;
 
 namespace OCore.Authorization.Filters
 {

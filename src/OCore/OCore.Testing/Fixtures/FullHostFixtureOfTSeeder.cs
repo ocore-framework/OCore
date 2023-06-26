@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using OCore.Testing.Abstractions;
-using Xunit;
 
 namespace OCore.Testing.Fixtures;
 

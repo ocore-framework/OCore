@@ -1,12 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using OCore.Core.Extensions;
-using OCore.Authorization.Abstractions.Request;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
+using OCore.Authorization.Request;
 
 namespace OCore.Entities.Data.Http
 {

@@ -1,7 +1,6 @@
 ﻿using Microsoft.Extensions.Hosting;
 using OCore.Testing.Abstractions;
 using OCore.Testing.Fixtures;
-using Xunit;
 
 namespace OCore.Testing.Host;
 

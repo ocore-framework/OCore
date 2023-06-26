@@ -7,12 +7,6 @@ namespace OCore.Http.Hateoas;
 
 public static class Extensions
 {
-    public static IEnumerable<HateoasLink>  GetHateoasLinks<T>(this T entity)
-        where T: IIdentifyable
-    {
-        return GetHateoasLinks(entity);
-    }
-    
     public static IEnumerable<HateoasLink> GetHateoasLinks(this IIdentifyable entity)
     {
         string id = entity.Id;

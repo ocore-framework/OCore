@@ -1,6 +1,6 @@
-﻿using OCore.Authorization.Abstractions;
-using Orleans;
+﻿using Orleans;
 using System;
+using OCore.Authorization.Request;
 
 namespace OCore.Authorization
 {

@@ -1,13 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
-using OCore.Core.Extensions;
 using OCore.Diagnostics.Filters;
 using Orleans;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace OCore.Diagnostics.Sinks.Logging

@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Logging;
-using OCore.Authorization.Abstractions.Request;
 using OCore.Core.Extensions;
 using Orleans;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using OCore.Authorization.Request;
 
 namespace OCore.Entities
 {

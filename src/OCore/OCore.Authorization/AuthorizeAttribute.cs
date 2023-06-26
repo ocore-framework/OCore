@@ -1,9 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc.Filters;
-using OCore.Authorization.Abstractions;
-using OCore.Authorization.Abstractions.Request;
 using Orleans.Runtime;
 using System;
 using System.Linq;
+using OCore.Authorization.Request;
 
 namespace OCore.Authorization
 {

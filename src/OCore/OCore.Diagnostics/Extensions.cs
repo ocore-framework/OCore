@@ -4,9 +4,6 @@ using OCore.Diagnostics.Sinks.CorrelationId;
 using OCore.Diagnostics.Sinks.Logging;
 using Orleans;
 using Orleans.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace OCore.Diagnostics
 {

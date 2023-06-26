@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using OCore.Authorization;
-using OCore.Authorization.Abstractions;
+using OCore.Authorization.Request;
 using OCore.Core;
 using OCore.Entities.Data;
 using OCore.Resources.ResourceTypes;

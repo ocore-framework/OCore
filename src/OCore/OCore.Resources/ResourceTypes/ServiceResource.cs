@@ -1,5 +1,5 @@
 ﻿using System.Reflection;
-using OCore.Authorization.Abstractions;
+using OCore.Authorization.Request;
 
 namespace OCore.Resources.ResourceTypes;
 

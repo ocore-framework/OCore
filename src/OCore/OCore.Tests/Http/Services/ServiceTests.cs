@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using OCore.Testing.Fixtures;
 using OCore.Testing.Host;
-using OCore.Tests.Seeders.Zoo;
 
 namespace OCore.Tests.Http.Services;
 

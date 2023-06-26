@@ -21,7 +21,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.Core", "OCore.Core\OC
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.Http", "OCore.Http\OCore.Http.csproj", "{88EC200F-AD12-4A51-91FC-B8B41B5E01EE}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.Authorization.Abstractions", "OCore.Authorization.Abstractions\OCore.Authorization.Abstractions.csproj", "{0FFE0444-230C-426A-A1C6-58A65B7C437C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.Authorization.Request", "OCore.Authorization.Request\OCore.Authorization.Request.csproj", "{0FFE0444-230C-426A-A1C6-58A65B7C437C}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OCore.Setup", "OCore.Setup\OCore.Setup.csproj", "{80361609-3DEE-4E37-B7C1-AC24E1DFFF7E}"
 EndProject

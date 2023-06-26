@@ -3,8 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net7.0</TargetFramework>
     <IsPackable>true</IsPackable>
-    <PackageId>OCore.Authorization.Abstractions</PackageId>    
-    <Authors>COCPORN</Authors>
+    <PackageId>OCore.Authorization.Request</PackageId>    
+    <Authors>COCPORN</Authors>    
+    <RootNamespace>OCore.Authorization.Payload</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

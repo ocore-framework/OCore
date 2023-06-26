@@ -1,10 +1,5 @@
 ﻿using OCore.Core.Extensions;
 using OCore.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using OCore.Resources;
 
 namespace OCore.Authorization.Services

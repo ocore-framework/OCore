@@ -1,8 +1,8 @@
-﻿using OCore.Authorization.Abstractions;
-using OCore.Services;
+﻿using OCore.Services;
 using Orleans;
 using System;
 using System.Threading.Tasks;
+using OCore.Authorization.Request;
 
 namespace OCore.Authorization
 {

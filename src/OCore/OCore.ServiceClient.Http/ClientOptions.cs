@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OCore.ServiceClient.Http
+﻿namespace OCore.ServiceClient.Http
 {
     public class ClientOptions
     {

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Hosting;
 using OCore.Testing.Fixtures;
-using Xunit;
 
 namespace OCore.Testing.Host;
 

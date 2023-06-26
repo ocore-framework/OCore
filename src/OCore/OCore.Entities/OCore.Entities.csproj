@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\OCore.Authorization.Abstractions\OCore.Authorization.Abstractions.csproj" />
+    <ProjectReference Include="..\OCore.Authorization.Request\OCore.Authorization.Request.csproj" />
     <ProjectReference Include="..\OCore.Core\OCore.Core.csproj" />
   </ItemGroup>
 
