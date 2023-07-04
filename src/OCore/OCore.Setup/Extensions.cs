@@ -14,7 +14,7 @@ namespace OCore.DefaultSetup
         {
             return serviceCollection
                 .AddServiceRouter()
-                .AddDiagnosticIncomingGrainCallFilter();                ;
+                .AddDiagnosticIncomingGrainCallFilter();
         }
 
         public static void UseDefaultOCore(this IApplicationBuilder app,
@@ -32,8 +32,7 @@ namespace OCore.DefaultSetup
                     version,
                     stripInternal,
                     openApiInternalPrefixes);
-            });            
+            });
         }
-
     }
 }

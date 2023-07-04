@@ -1,22 +1,31 @@
-﻿using OCore.Entities.Data.Extensions;
+﻿using System.Collections.Generic;
+using OCore.Entities.Data.Extensions;
 using Orleans;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 #nullable enable
 
 namespace OCore.Entities.Data
 {
-    public abstract class DataEntity<T> : 
-        Entity<T>, 
+    public abstract class DataEntity<T> :
+        Entity<T>,
         IIdentifyable,
         IDataEntity<T> where T : new()
-    
+
     {
+        private readonly IEnumerable<IInterceptor<T>> _interceptors;
+
+        public DataEntity()
+        {
+            _interceptors = ServiceProvider.GetServices<IInterceptor<T>>();
+        }
+
         /// <summary>
         /// The ID for this DataEntity
         /// </summary>
         public string Id => this.GetPrimaryKeyString();
-        
+
         /// <summary>
         /// Check to see if the data entity exists
         /// </summary>
@@ -26,12 +35,20 @@ namespace OCore.Entities.Data
             return Task.FromResult(Created);
         }
 
-        public virtual Task Create(T data)
+        public virtual async Task Create(T data)
         {
             if (Created == false)
             {
+                if (_interceptors is not null)
+                {
+                    foreach (var interceptor in _interceptors)
+                    {
+                        await interceptor.OnCreate(data);
+                    }
+                }
+
                 State = data;
-                return WriteStateAsync();
+                await WriteStateAsync();
             }
             else
             {
@@ -51,14 +68,23 @@ namespace OCore.Entities.Data
             {
                 identity = this.GetPrimaryKeyString();
             }
+
             return GrainFactory.GetDataEntity<T1>(identity);
         }
 
-        public virtual Task<T> Read()
+        public virtual async Task<T> Read()
         {
             if (Created == true)
             {
-                return Task.FromResult(State);
+                if (_interceptors is not null)
+                {
+                    foreach (var interceptor in _interceptors)
+                    {
+                        await interceptor.OnRead(State);
+                    }
+                }
+
+                return State;
             }
             else
             {
@@ -67,12 +93,20 @@ namespace OCore.Entities.Data
         }
 
         /// <inheritdoc />
-        public virtual Task Update(T data)
+        public virtual async Task Update(T data)
         {
             if (Created == true)
             {
+                if (_interceptors is not null)
+                {
+                    foreach (var interceptor in _interceptors)
+                    {
+                        await interceptor.OnUpdate(State, data);
+                    }
+                }
+
                 State = data;
-                return WriteStateAsync();
+                await WriteStateAsync();
             }
             else
             {
@@ -85,37 +119,59 @@ namespace OCore.Entities.Data
         {
             if (Created is true && State is not null)
             {
+                if (_interceptors is not null)
+                {
+                    foreach (var interceptor in _interceptors)
+                    {
+                        await interceptor.OnPartialUpdate(State, data, fields);
+                    }
+                }
+
                 foreach (var field in fields)
                 {
                     // Check if the data has the field using reflection
                     var property = State.GetType().GetProperty(field);
-                    
+
                     // If the property exists, update the value
                     if (property != null)
                     {
                         property.SetValue(State, property.GetValue(data));
                     }
                 }
+
                 await WriteStateAsync();
             }
             else
             {
                 throw new DataCreationException($"DataEntity not created: {typeof(T)}");
             }
-
         }
 
-        public virtual Task Upsert(T data)
+        public virtual async Task Upsert(T data)
         {
+            if (_interceptors is not null)
+            {
+                foreach (var interceptor in _interceptors)
+                {
+                    await interceptor.OnUpsert(State, data);
+                }
+            }
             State = data;
-            return WriteStateAsync();
+            await WriteStateAsync();
         }
 
-        public override Task Delete()
+        public override async Task Delete()
         {
             if (Created == true)
             {
-                return base.Delete();
+                if (_interceptors is not null)
+                {
+                    foreach (var interceptor in _interceptors)
+                    {
+                        await interceptor.OnDelete(State);
+                    }
+                }
+                await base.Delete();
             }
             else
             {
@@ -123,9 +179,16 @@ namespace OCore.Entities.Data
             }
         }
 
-        public virtual Task Commit()
+        public virtual async Task Commit()
         {
-            return WriteStateAsync();
+            if (_interceptors is not null)
+            {
+                foreach (var interceptor in _interceptors)
+                {
+                    await interceptor.OnCommit(State);
+                }
+            }
+            await WriteStateAsync();
         }
     }
 }

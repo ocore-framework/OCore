@@ -22,4 +22,8 @@
 		<ProjectReference Include="..\OCore.Services\OCore.Services.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Abstractions\" />
+	</ItemGroup>
+
 </Project>
