@@ -12,7 +12,7 @@ namespace OCore.Events
 
         public static Task RaiseEvent<T>(this IGrainFactory grainFactory, T @event, string streamNameSuffix = null)
         {
-            return grainFactory.GetEventAggregator().Raise<T>(@event, streamNameSuffix);
+            return grainFactory.GetEventAggregator().Raise(@event, streamNameSuffix);
         }
     }
 }

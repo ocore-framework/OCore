@@ -408,6 +408,10 @@ Multifetch on data entity types will honor the individual key strategies for the
 
 ## Events 
 
+**This feature doesn't currently work, and the API is just plain wrong at this time. Also no tests run.**
+
+
+
 OCore has a system for event handling based on Orleans Streams that provides:
 
 - Event aggregation

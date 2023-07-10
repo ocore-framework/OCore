@@ -131,7 +131,8 @@ namespace OCore.Events
 
             var streamProvider = this.GetStreamProvider(eventTypeOptions.Item2.ProviderName ?? "BaseStreamProvider");
 
-            var stream = streamProvider.GetStream<Event<T>>($"{destination}/{streamName}");
+            //var stream = streamProvider.GetStream<Event<T>>($"{destination}/{streamName}");
+            var stream = streamProvider.GetStream<Event<T>>($"TestEvent");
             if (eventTypeOptions.Item2.FireAndForget == true)
             {
                 stream.OnNextAsync(EnvelopeEvent(@event)).FireAndForget(logger);
