@@ -1,4 +1,5 @@
-﻿using Orleans;
+﻿using System.Collections.Generic;
+using Orleans;
 using System.Threading.Tasks;
 
 #nullable enable
@@ -72,5 +73,13 @@ namespace OCore.Entities.Data
         /// Commit the state changes to backing store.
         /// </summary>
         Task Commit();
+        
+        IAsyncEnumerable<string> GetJsonUpdates(bool jsonDiff = true);
+
+        IAsyncEnumerable<T> GetUpdates();
+
+        void Subscribe(IDataEntityUpdateEnumerable<T> subscriber);
+        
+        void Unsubscribe(IDataEntityUpdateEnumerable<T> subscriber);
     }
 }

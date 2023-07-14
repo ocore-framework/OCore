@@ -46,9 +46,12 @@ namespace OCore.Entities.Data
                         await interceptor.OnCreate(data);
                     }
                 }
-
                 State = data;
                 await WriteStateAsync();
+                foreach (var subscriber in _subscribers)
+                {
+                    await subscriber.UpdateState(State);
+                }
             }
             else
             {
@@ -107,6 +110,10 @@ namespace OCore.Entities.Data
 
                 State = data;
                 await WriteStateAsync();
+                foreach (var subscriber in _subscribers)
+                {
+                    await subscriber.UpdateState(State);
+                }
             }
             else
             {
@@ -140,6 +147,10 @@ namespace OCore.Entities.Data
                 }
 
                 await WriteStateAsync();
+                foreach (var subscriber in _subscribers)
+                {
+                    await subscriber.UpdateState(State);
+                }
             }
             else
             {
@@ -158,6 +169,10 @@ namespace OCore.Entities.Data
             }
             State = data;
             await WriteStateAsync();
+            foreach (var subscriber in _subscribers)
+            {
+                await subscriber.UpdateState(State);
+            }
         }
 
         public override async Task Delete()
@@ -172,6 +187,10 @@ namespace OCore.Entities.Data
                     }
                 }
                 await base.Delete();
+                foreach (var subscriber in _subscribers)
+                {
+                    subscriber.Complete();
+                }
             }
             else
             {
@@ -187,8 +206,34 @@ namespace OCore.Entities.Data
                 {
                     await interceptor.OnCommit(State);
                 }
+                foreach (var subscriber in _subscribers)
+                {
+                    await subscriber.UpdateState(State);
+                }
             }
             await WriteStateAsync();
+        }
+        
+        public IAsyncEnumerable<T> GetUpdates()
+        {
+            return new DataEntityUpdateEnumerable<T>(this);
+        }
+
+        List<IDataEntityUpdateEnumerable<T>> _subscribers = new();
+
+        public void Subscribe(IDataEntityUpdateEnumerable<T> subscriber)
+        {
+            _subscribers.Add(subscriber);
+        }
+
+        public void Unsubscribe(IDataEntityUpdateEnumerable<T> subscriber)
+        {
+            _subscribers.Remove(subscriber);
+        }
+
+        public IAsyncEnumerable<string> GetJsonUpdates(bool jsonDiff = true)
+        {
+            return new DataEntityUpdateJsonEnumerable<T>(this, jsonDiff);
         }
     }
 }
