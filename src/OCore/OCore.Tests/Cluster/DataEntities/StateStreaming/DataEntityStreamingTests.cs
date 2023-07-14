@@ -5,7 +5,7 @@ using OCore.Testing.Fixtures;
 using OCore.Testing.Host;
 using Xunit.Abstractions;
 
-namespace OCore.Tests.AsyncEnumerator;
+namespace OCore.Tests.Cluster.DataEntities.StateStreaming;
 
 [GenerateSerializer]
 public class TestState
@@ -53,11 +53,11 @@ public class Producer : DataEntity<TestState>, IProducer
     }
 }
 
-public class AsyncEnumeratorTests : FullHost
+public class DataEntityStreamingTests : FullHost
 {
     private readonly ITestOutputHelper output;
 
-    public AsyncEnumeratorTests(ITestOutputHelper output, FullHostFixture fixture) : base(fixture)
+    public DataEntityStreamingTests(ITestOutputHelper output, FullHostFixture fixture) : base(fixture)
     {
         this.output = output;
     }
@@ -171,6 +171,59 @@ public class AsyncEnumeratorTests : FullHost
     }
     
     [Fact]
+    public async Task TestJsonDiffStreamWithObjectDeletion()
+    {
+        var entity = ClusterClient.GetDataEntity<IProducer>("JsonDiffStreamerToBeDeleted");
+
+        List<string> jsonLines1 = new();
+
+        var runTask1 = Task.Run(async () =>
+        {
+            await foreach (var json in entity.GetJsonUpdates(true))
+            {
+                output.WriteLine($"1: {json}");
+                jsonLines1.Add(json);
+            }
+        });
+
+        List<string> jsonLines2 = new();
+        var runTask2 = Task.Run(async () =>
+        {
+            await foreach (var json in entity.GetJsonUpdates(true))
+            {
+                output.WriteLine($"2: {json}");
+                jsonLines2.Add(json);
+            }
+        });
+
+
+        await Task.Delay(100);
+        
+        await entity.Create(new TestState()
+        {
+            Value = 69
+        });
+        
+        await entity.Update(new TestState()
+        {
+            Value = 420
+        });
+
+        await entity.Delete();
+        
+        await Task.WhenAny(runTask1, runTask2, Task.Delay(200));
+        await Task.WhenAll(runTask1, runTask2);
+        
+        Assert.Equal(2, jsonLines1.Count);
+        Assert.Equal(2, jsonLines2.Count);
+        Assert.Equal("{\"Value\":69}", jsonLines1[0]);
+        Assert.Equal("{\"Value\":69}", jsonLines2[0]);
+        Assert.Equal("[{\"path\":\"/Value\",\"op\":\"replace\",\"value\":420}]", jsonLines1[1]);
+        Assert.Equal("[{\"path\":\"/Value\",\"op\":\"replace\",\"value\":420}]", jsonLines2[1]);
+    }
+
+    
+    [Fact]
     public async Task TestStreamWithObjectDeletion()
     {
         var entity = ClusterClient.GetDataEntity<IProducer>("StreamerToBeDeleted");
@@ -249,6 +302,7 @@ public class AsyncEnumeratorTests : FullHost
 
         var producerTask = Task.Run(async () =>
         {
+            await Task.Delay(200);
             foreach (var value in Enumerable.Range(0, 10))
             {
                 //await Task.Delay(100);

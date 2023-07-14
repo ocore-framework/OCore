@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="JsonDiffPatch.Net" Version="2.3.0" />
 		<PackageReference Include="Microsoft.Orleans.Server" Version="7.2.1" />			
 	</ItemGroup>
 
