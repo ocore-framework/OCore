@@ -16,6 +16,7 @@ namespace OCore.Entities.Data
 
     public interface IDataEntity : IGrainWithStringKey
     {
+        IAsyncEnumerable<string> GetJsonUpdates(bool jsonDiff = true);
     }
 
     public interface IDataEntity<T> : IDataEntity
@@ -74,7 +75,6 @@ namespace OCore.Entities.Data
         /// </summary>
         Task Commit();
         
-        IAsyncEnumerable<string> GetJsonUpdates(bool jsonDiff = true);
 
         IAsyncEnumerable<T> GetUpdates();
 

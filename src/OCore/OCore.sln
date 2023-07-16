@@ -60,6 +60,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Data.Entities.SignalR", "OCore.Data.Entities.SignalR\OCore.Data.Entities.SignalR.csproj", "{C31CA0FC-CB3C-4457-A07E-C80561E3DAC3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -162,6 +164,10 @@ Global
 		{983CE710-B300-4102-BFBA-BEA27DA0D522}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{983CE710-B300-4102-BFBA-BEA27DA0D522}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{983CE710-B300-4102-BFBA-BEA27DA0D522}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C31CA0FC-CB3C-4457-A07E-C80561E3DAC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C31CA0FC-CB3C-4457-A07E-C80561E3DAC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C31CA0FC-CB3C-4457-A07E-C80561E3DAC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C31CA0FC-CB3C-4457-A07E-C80561E3DAC3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
