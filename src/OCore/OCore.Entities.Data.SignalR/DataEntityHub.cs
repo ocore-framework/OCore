@@ -3,7 +3,7 @@ using System.Threading.Tasks.Dataflow;
 using Microsoft.AspNetCore.SignalR;
 using OCore.Entities.Data;
 
-namespace OCore.Data.Entities.SignalR;
+namespace OCore.Entities.Data.SignalR;
 
 public class DataEntityHub : Hub
 {

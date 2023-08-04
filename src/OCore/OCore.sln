@@ -60,7 +60,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFolder", "SolutionF
 		..\..\README.md = ..\..\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Data.Entities.SignalR", "OCore.Data.Entities.SignalR\OCore.Data.Entities.SignalR.csproj", "{C31CA0FC-CB3C-4457-A07E-C80561E3DAC3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OCore.Entities.Data.SignalR", "OCore.Entities.Data.SignalR\OCore.Entities.Data.SignalR.csproj", "{C31CA0FC-CB3C-4457-A07E-C80561E3DAC3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

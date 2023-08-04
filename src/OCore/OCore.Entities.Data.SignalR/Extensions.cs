@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace OCore.Data.Entities.SignalR;
+namespace OCore.Entities.Data.SignalR;
 
 public static class Extensions
 {

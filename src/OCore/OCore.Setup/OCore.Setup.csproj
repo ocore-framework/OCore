@@ -23,6 +23,7 @@
 		<ProjectReference Include="..\OCore.Core\OCore.Core.csproj" />
 		<ProjectReference Include="..\OCore.Diagnostics\OCore.Diagnostics.csproj" />
 		<ProjectReference Include="..\OCore.Entities.Data.Http\OCore.Entities.Data.Http.csproj" />
+		<ProjectReference Include="..\OCore.Entities.Data.SignalR\OCore.Entities.Data.SignalR.csproj" />
 		<ProjectReference Include="..\OCore.Events\OCore.Events.csproj" />
 		<ProjectReference Include="..\OCore.Http.OpenApi\OCore.Http.OpenApi.csproj" />
 		<ProjectReference Include="..\OCore.Http.Hateoas\OCore.Http.Hateoas.csproj" />
