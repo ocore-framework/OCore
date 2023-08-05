@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using OCore.Diagnostics;
 using OCore.Entities.Data.Http;
+using OCore.Entities.Data.SignalR;
 using OCore.Http.OpenApi;
 using OCore.Services;
 using OCore.Services.Http;
@@ -12,6 +13,8 @@ namespace OCore.DefaultSetup
     {
         public static IServiceCollection AddDefaultOCore(this IServiceCollection serviceCollection)
         {
+            serviceCollection.AddSignalR();
+            
             return serviceCollection
                 .AddServiceRouter()
                 .AddDiagnosticIncomingGrainCallFilter();
@@ -27,6 +30,7 @@ namespace OCore.DefaultSetup
             {
                 endpoints.MapServices("services");
                 endpoints.MapDataEntities("data");
+                endpoints.MapHub<DataEntityHub>("/data-streaming");
                 endpoints.MapDeveloperOpenApi("api-docs",
                     appTitle,
                     version,
