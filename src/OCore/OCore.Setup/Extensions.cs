@@ -14,7 +14,13 @@ namespace OCore.DefaultSetup
         public static IServiceCollection AddDefaultOCore(this IServiceCollection serviceCollection)
         {
             serviceCollection.AddSignalR();
-            
+            serviceCollection.AddCors(options =>
+            {
+                options.AddPolicy("AllowAll", builder =>
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader());
+            });
             return serviceCollection
                 .AddServiceRouter()
                 .AddDiagnosticIncomingGrainCallFilter();

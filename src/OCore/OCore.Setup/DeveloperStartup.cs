@@ -30,6 +30,7 @@ namespace OCore.Setup
             app.UseMiddleware<CorrelationIdProviderMiddleware>();
             app.UseMiddleware<ErrorHandlingMiddleware>();
             app.UseRouting();
+            app.UseCors("AllowAll");
             var appTitle = configuration.GetValue<string>("ApplicationTitle");
             app.UseDefaultOCore(appTitle,
                 openApiInternalPrefixes: new[]
